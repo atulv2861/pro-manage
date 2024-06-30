@@ -13,6 +13,7 @@ import analyticsD from "../../assets/images/databaseD.png";
 import SettingsD from "../../assets/images/settingsD.png";
 import proManage from "../../assets/images/codesandbox.png";
 import logout from "../../assets/images/logout.png"
+
 export default function DashboardPage() {
     const [isLogoutConfirmationPopupOpen,setIsLogoutConfirmationPopupOpen]=useState(false);
     const [clickedLink, setClickedLink]=useState('board');
@@ -38,10 +39,13 @@ export default function DashboardPage() {
         navigate('setting');
     }
 
-    const handleLogout=()=>{
+    const handleLogout=async()=>{        
         setIsLogoutConfirmationPopupOpen(true);
         
     }
+
+  
+
     return (
         <div className={Style.Dashboard}>
             {isLogoutConfirmationPopupOpen&&<LogoutPopup

@@ -7,8 +7,7 @@ import {userRegistrationLoading,
     userLoginError,
     userLogoutLoading,
     userLogoutSuccess,
-    userLogoutError} from "../../Store/Slice/UserSlice";
-    import handleGetAllQuiz from "../Hook/useQuiz"
+    userLogoutError} from "../../Store/Slice/UserSlice";    
     import {registerUser} from "../../Service/user/registerUser";
     import { loginUser } from "../../Service/user/loginUser";
     import { logoutUser } from "../../Service/user/logoutUser";

@@ -5,7 +5,9 @@ import delete1 from '../../assets/images/delete.png'
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import Dropdown from "./Dropdown";
-export default function CreateTodoComponent({ setCreateTodoPopupOpen }) {
+import useTask from "../Hook/useTask";
+import { toast } from "react-toastify";
+export default function CreateTodoComponent({ setCreateTodoPopupOpen,item }) {
     const inputRef = useRef(null);
     const [fieldErrors, setFieldErrors] = useState();
     const [taskItem, setTaskItem] = useState([]);
@@ -13,13 +15,14 @@ export default function CreateTodoComponent({ setCreateTodoPopupOpen }) {
     const [selectedDate, setSelectedDate] = useState(0);
     const [date, setDate] = useState(new Date());
     const [assignee, setAssignee] = useState('');
+    const {handleCreateTask}=useTask();
     const [todos, setTodos] = useState([{
         task: "",
         priority: "",
         assignTo: "",
         checkList: [],
         dueDate: "",
-        currentStatus: 'Todo',
+        currentStatus: 'TODO',
     }]);
 
     useEffect(() => {
@@ -30,6 +33,23 @@ export default function CreateTodoComponent({ setCreateTodoPopupOpen }) {
         };
         setTodos(values);        
     }, [assignee]);
+
+    useEffect(()=>{
+        const editTodo=async()=>{
+            console.log(item)
+            setTodos([{
+                task: item?.task,
+                priority: item?.priority,
+                assignTo: item?.assignTo,
+                checkList: item?.checkList,
+                dueDate: item?.dueDate,
+                currentStatus: item?.currentStatus,
+        }])
+        }
+        if(item){
+            editTodo();
+        }
+    },[]);
 
     const handleAddNewTaskItem = () => {
         const newTodos = [...todos];
@@ -59,7 +79,7 @@ export default function CreateTodoComponent({ setCreateTodoPopupOpen }) {
         const month = ('0' + (date.getMonth() + 1)).slice(-2);
         const year = date.getFullYear();
 
-        return `${day}/${month}/${year}`;
+        return `${year}/${month}/${day}`;
     }
 
     const handleSelectDate = (date) => {
@@ -69,7 +89,7 @@ export default function CreateTodoComponent({ setCreateTodoPopupOpen }) {
         let values = [...todos];
         values[0] = {
             ...values[0],
-            dueDate: formatDate(date),
+            dueDate: date,
         };
         setTodos(values);        
     }
@@ -148,8 +168,19 @@ export default function CreateTodoComponent({ setCreateTodoPopupOpen }) {
         setTodos(newTodos);
     }
 
-    const handleCreateTodo=()=>{
-        console.log(todos);
+    const handleCreateTodo=async ()=>{
+        await handleCreateTask(...todos)
+        toast.success('Task created successfully!');
+        // setTodos([{
+        //     task: "",
+        //     priority: "",
+        //     assignTo: "",
+        //     checkList: [],
+        //     dueDate: "",
+        //     currentStatus: 'TODO',
+        // }]);
+        //setCreateTodoPopupOpen(false);
+        console.log(...todos);
     }
         return (<>
 

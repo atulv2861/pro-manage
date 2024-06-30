@@ -15,5 +15,5 @@ router.delete("/deleteTaskById/:taskId",isAuth,deleteTask);
 // router.get("/getQuizDetails",isAuth, getQuizDetails);
 // router.post("/assessment", assessment);
 // router.post("/getAssessmentDetails",isAuth,getAssessmentData);
-router.route("/updateTask").put(isAuth,scheamValidation.request_validation(reqValidation.updateTask),updateTask);
+router.route("/updateTaskById/:taskId").put(isAuth,scheamValidation.request_validation(reqValidation.updateTask),updateTask);
  module.exports=router;

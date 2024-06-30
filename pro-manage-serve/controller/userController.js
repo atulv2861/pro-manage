@@ -62,13 +62,13 @@ const loginUser = async (req, res) => {
         let ussrr = await User.findOneAndUpdate(
             { _id: user._id.toString() },
             {
-                refreshToken: refreshToken,
-                isLoggedIn: true,
+                refreshToken: refreshToken,                
             },
             { new: true }
         ); 
         res.status(200).json({
             success: true,
+            isLoggedIn:true,
             user: ussrr,
             accessToken
         })

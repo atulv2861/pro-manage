@@ -12,7 +12,7 @@ const validationSchema = {
         password: Joi.string().min(6).max(1024).required(),
     }),
     createTask : Joi.object().keys({
-        title:Joi.string().strict(true).min(3).max(255).required(),
+        task:Joi.string().strict(true).min(3).max(255).required(),
         priority:Joi.string().strict(true).valid("HIGH PRIORITY","MODERATE PRIORITY","LOW PRIORITY").required(),
         assignTo:Joi.string().strict(true).min(5).max(255).optional().email(),
         checkList: Joi.array().strict(true).items(
@@ -21,11 +21,11 @@ const validationSchema = {
                 value: Joi.string().strict(true).min(3).max(255).required()
             })
         ).unique().optional(),
-        dueDate:Joi.date().iso().required(),
+        dueDate:Joi.date().iso().optional(),
         currentStatus:Joi.string().strict(true).valid("BACKLOG","TODO","INPROGRESS","DONE").min(4).max(255).optional()
     }),
     updateTask : Joi.object().keys({
-        _id: Joi.string().strict(true).required(),
+        // _id: Joi.string().strict(true).required(),
         title:Joi.string().strict(true).min(3).max(255).optional(),
         priority:Joi.string().strict(true).valid("HIGH PRIORITY","MODERATE PRIORITY","LOW PRIORITY").optional(),
         assignTo:Joi.string().strict(true).min(5).max(255).optional().email(),

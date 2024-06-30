@@ -50,6 +50,7 @@ const userSlice = createSlice({
         },
         userLogoutSuccess: (state,{ payload }) => {
             state.isUserLogoutLoading = false;
+            console.log(payload)
             state.userData = payload;
             state.userLogoutError = null;
         },

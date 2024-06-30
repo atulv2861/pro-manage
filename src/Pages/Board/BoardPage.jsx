@@ -4,9 +4,12 @@ import BoardComponent from "../../Components/Board/BoardComponent";
 import people from "../../assets/images/people.png";
 import AddPeopleComponent from "../../Components/AddPeople/AddPeopleComponent";
 import { AiOutlineCaretUp, AiOutlineCaretDown } from "react-icons/ai";
+import useTask from "../../Components/Hook/useTask";
 export default function BoardPage() {
     const [isAddPeoplePopupOpen, setIsAddPeoplePopupOpen] = useState(false);
     const [isOpen, setIsOpen] = useState(false);
+    const[filter,setFilter]=useState('');
+    const {handleGetAllTaskByDate}=useTask();
     const item = ['atulverma2861@gmail.com', 'atulverma2861@gmail.com', 'atulverma2861@gmail.com', 'atulverma2861@gmail.com', 'atulverma2861@gmail.com'];
     const getFormattedDate = (date) => {
         const day = date.getDate();
@@ -30,6 +33,15 @@ export default function BoardPage() {
         setIsAddPeoplePopupOpen(true);
     }
 
+ 
+
+    const handleGetTasksByTimeDuration=async(time)=>{
+        const result=time === 'today' ? 'Today' : time === 'week' ? 'This Week' : 'This Month';
+        setFilter(result);
+        setIsOpen(false);
+        await handleGetAllTaskByDate(time);
+    }
+
     return (
         <div className={Style.Container}>
             {isAddPeoplePopupOpen && <AddPeopleComponent
@@ -46,14 +58,14 @@ export default function BoardPage() {
                     </div>
                     <div>
                         <div>
-                            <button className={Style.DropdownBtn} onClick={e => setIsOpen(prev => !prev)}>{'Today'}
+                            <button className={Style.DropdownBtn} onClick={e => setIsOpen(prev => !prev)}>{filter?filter:'Today'}
                                 {!isOpen ? (<AiOutlineCaretUp />) : (<AiOutlineCaretDown />)}
                             </button>
                             {isOpen && (
                                 <div className={Style.DropdownItem}>
-                                    <div><button className={Style.DropdownListBtn}>Today</button></div>
-                                    <div><button className={Style.DropdownListBtn}>This Week</button></div>
-                                    <div><button className={Style.DropdownListBtn}>This Month</button></div>    
+                                    <div><button onClick={e=>handleGetTasksByTimeDuration('today')} className={Style.DropdownListBtn}>Today</button></div>
+                                    <div><button onClick={e=>handleGetTasksByTimeDuration('week')} className={Style.DropdownListBtn}>This Week</button></div>
+                                    <div><button onClick={e=>handleGetTasksByTimeDuration('month')} className={Style.DropdownListBtn}>This Month</button></div>    
                                 </div>
                             )}
                         </div>

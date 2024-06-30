@@ -10,7 +10,8 @@ const isAuth = async (req, res, next) => {
                 message: "Token is required!"
             })
         }
-        const token = authorization.split(" ")[1];
+        const token = JSON.parse(authorization.split(" ")[1]);
+        console.log(token)
         const { _id } = jwt.verify(token, process.env.JWT_ACCESS_TOKEN_KEY);
         if (!_id)
             return res.status(401).json({

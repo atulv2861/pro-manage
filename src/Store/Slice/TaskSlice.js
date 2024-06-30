@@ -13,9 +13,9 @@ const initialState = {
     isTaskByIdLoading:false,
     taskByIdError:null,
 
-    tasksDetails:null,
-    isGetTasksDetailsLoading:false,    
-    getTasksDetailsError:null,
+    taskDetails:null,
+    isGetTaskDetailsLoading:false,    
+    getTaskDetailsError:null,
 
 };
 
@@ -71,17 +71,17 @@ const taskSlice = createSlice({
 
         // Get tasks details
         startGetTasksDetailsLoading: (state) => {
-            state.isGetTasksDetailsLoading = true;
-            state.getTasksDetailsError = null;
+            state.isGetTaskDetailsLoading = true;
+            state.getTaskDetailsError = null;
         },
         getTasksDetailsSuccess: (state, { payload }) => {
-            state.isGetTasksDetailsLoading = false;                     
-            state.tasksDetails = payload;
-            state.getTasksDetailsError=null;
+            state.isGetTaskDetailsLoading = false;                     
+            state.taskDetails = payload;
+            state.getTaskDetailsError=null;
         },
         getTasksDetailsError: (state, { payload }) => {
-            state.isGetTasksDetailsLoading = false;
-            state.getTasksDetailsError = payload;
+            state.isGetTaskDetailsLoading = false;
+            state.getTaskDetailsError = payload;
         },
      
     }
@@ -91,7 +91,7 @@ export default taskSlice.reducer;
 
 export const {
     startGetAllTasksLoading,
-    getAllTasksSuccess,
+    getAllTaskSuccess,
     getAllTasksError,
     startGetTasksDetailsLoading,
     getTasksDetailsSuccess,

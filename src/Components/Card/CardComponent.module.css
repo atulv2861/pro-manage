@@ -3,7 +3,7 @@
     max-height: 100vh;
     border-radius: 12px;
     background-color: #fff;
-
+    position: relative;
 }
 
 .DropdownBtn {
@@ -17,7 +17,7 @@
     border-radius: 8px;
     background: #fff;
     font-size: large;
-    cursor: pointer;
+    cursor: pointer;    
 }
 
 
@@ -64,9 +64,9 @@
 }
 
  .DropdownItem {
-    position: relative;
+    position: absolute;
     width: 120px;
-    top: 56px;
+    top: 85px;
     left: 70%;
     transform: translate(-50%, -50%);
     background: #fff;
@@ -102,6 +102,6 @@
     width: 10px;
     height: 10px;
     border-radius: 50%;
-    background-color: red;
+    /* background-color: red; */
     margin: 4px -9px 0px 10px;
 }

@@ -25,10 +25,11 @@ const updateTask = async (req, res) => {
   try {  
     console.log("=================Api called========",req.url);
     console.log(req.body)
-    const {_id,...data} = req.body
-    console.log(_id,data)
+    const taskId=req?.params?.taskId;
+    const {...data} = req.body
+    console.log(taskId,data)
     const newTask = await Task.findOneAndUpdate(
-      { _id: new mongoose.Types.ObjectId(_id.toString())}, // Filter
+      { _id: new mongoose.Types.ObjectId(taskId.toString())}, // Filter
       { $set: { ...data } }, // Update
       { new: true } // Options
     );
@@ -122,10 +123,10 @@ const getAllTask = async(req,res)=>{
         pipeline[0].$match.createdAt = {$gte: moment.tz(new Date(), "Asia/Kolkata").startOf('day').toDate()}
         break;
       case 'week':
-        pipeline[0].$match.createdAt = {$gte:moment.tz(from_date, "Asia/Kolkata").subtract(7, 'days').startOf('day').toDate()}
+        pipeline[0].$match.createdAt = {$gte:moment.tz(new Date(), "Asia/Kolkata").subtract(7, 'days').startOf('day').toDate()}
         break;
       case 'month':
-        pipeline[0].$match.createdAt = {$gte:moment.tz(from_date, "Asia/Kolkata").subtract(30, 'days').startOf('day').toDate()}
+        pipeline[0].$match.createdAt = {$gte:moment.tz(new Date(), "Asia/Kolkata").subtract(30, 'days').startOf('day').toDate()}
         break;
       default:{
 
@@ -179,40 +180,114 @@ const getTaskAnalysis = async(req,res)=>{
           ]
         }
       },
-        {
-            $facet: {
-                byCurrentStatus: [
-                    {
-                        $group: {
-                            _id: "$currentStatus",
-                            count: { $sum: 1 } // Count documents in each currentStatus group
-                        }
-                    },
-                    {
-                        $project: {
-                            _id: 0,
-                            currentStatus: "$_id",
-                            count: 1
-                        }
-                    }
-                ],
-                byPriority: [
-                    {
-                        $group: {
-                            _id: "$priority",
-                            count: { $sum: 1 } // Count documents in each priority group
-                        }
-                    },
-                    {
-                        $project: {
-                            _id: 0,
-                            priority: "$_id",
-                            count: 1
-                        }
-                    }
-                ]
+      {
+        $facet: {
+          byCurrentStatus: [
+            {
+              $group: {
+                _id: "$currentStatus",
+                count: { $sum: 1 }
+              }
+            },
+            {
+              $group: {
+                _id: null,
+                statuses: {
+                  $push: {
+                    k: "$_id",
+                    v: "$count"
+                  }
+                }
+              }
+            },
+            {
+              $replaceRoot: {
+                newRoot: { $arrayToObject: "$statuses" }
+              }
+            },
+            {
+              $project: {
+                _id: 0,
+                BACKLOG: { $ifNull: ["$BACKLOG", 0] },
+                TODO: { $ifNull: ["$TODO", 0] },
+                INPROGRESS: { $ifNull: ["$INPROGRESS", 0] },
+                DONE: { $ifNull: ["$DONE", 0] }
+              }
             }
+          ],
+          byPriority: [
+            {
+              $group: {
+                _id: "$priority",
+                count: { $sum: 1 }
+              }
+            },
+            {
+              $group: {
+                _id: null,
+                priorities: {
+                  $push: {
+                    k: "$_id",
+                    v: "$count"
+                  }
+                }
+              }
+            },
+            {
+              $replaceRoot: {
+                newRoot: { $arrayToObject: "$priorities" }
+              }
+            },
+            {
+              $project: {
+                _id: 0,
+                "HIGH PRIORITY": { $ifNull: ["$HIGH PRIORITY", 0] },
+                "LOW PRIORITY": { $ifNull: ["$LOW PRIORITY", 0] },
+                "MODERATE PRIORITY": { $ifNull: ["$MODERATE PRIORITY", 0] }
+              }
+            }
+          ],
+          dueCount: [
+            {
+              $group: {
+                _id: null,
+                count: {
+                  $sum: {
+                    $cond: {
+                      if: { $ne: ["$dueDate", null] },
+                      then: 1,
+                      else: 0
+                    }
+                  }
+                }
+              }
+            }
+          ]
         }
+      },
+      {
+        $project: {
+          byCurrentStatus: { $arrayElemAt: ["$byCurrentStatus", 0] },
+          byPriority: { $arrayElemAt: ["$byPriority", 0] },
+          dueCount: { $arrayElemAt: ["$dueCount.count", 0] }
+        }
+      },
+      {
+        $project: {
+          byCurrentStatus: {
+            BACKLOG: { $ifNull: ["$byCurrentStatus.BACKLOG", 0] },
+            TODO: { $ifNull: ["$byCurrentStatus.TODO", 0] },
+            INPROGRESS: { $ifNull: ["$byCurrentStatus.INPROGRESS", 0] },
+            DONE: { $ifNull: ["$byCurrentStatus.DONE", 0] }
+          },
+          byPriority: {
+            "HIGH_PRIORITY": { $ifNull: ["$byPriority.HIGH PRIORITY", 0] },
+            "LOW_PRIORITY": { $ifNull: ["$byPriority.LOW PRIORITY", 0] },
+            "MODERATE_PRIORITY": { $ifNull: ["$byPriority.MODERATE PRIORITY", 0] }
+          },
+          dueCount: 1
+        }
+      }
     ]
     const tasks = await Task.aggregate(pipeline)
     res.status(201).json({

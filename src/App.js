@@ -19,7 +19,7 @@ function App() {
         <Route path='analytics' element={<AnalyticsPage/>}/>
         <Route path="setting" element={<SettingPage/>}/>
       </Route>
-      <Route path='/task' element={<TaskPage/>}/>
+      <Route path='/task/:taskId' element={<TaskPage/>}/>
     </Routes>
     </BrowserRouter>
   );

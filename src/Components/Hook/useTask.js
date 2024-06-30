@@ -1,6 +1,6 @@
 import { useDispatch } from "react-redux";
 import {startGetAllTasksLoading,
-    getAllTasksSuccess,
+    getAllTaskSuccess,
     getAllTasksError,
     startCreateTaskLoading,
     createTaskSuccess,
@@ -19,7 +19,7 @@ import { getAllTasks } from "../../Service/task/getAllTasks";
 import { getTaskById } from "../../Service/task/getTaskById";
 import { getTasksAnalytics } from "../../Service/task/getTasksAnalytics";
 import { updateTask } from "../../Service/task/updateTask";
-
+import { getAllTaskByDate } from "../../Service/task/getAllTaskByDate";
 
     const useTask = () => {
         const dispatch = useDispatch();
@@ -28,11 +28,21 @@ import { updateTask } from "../../Service/task/updateTask";
             try {
                 dispatch(startGetAllTasksLoading());                
                 const res = await getAllTasks();                           
-                dispatch(getAllTasksSuccess(res.data));                                            
+                dispatch(getAllTaskSuccess(res.data));                                            
             } catch (error) {              
                 dispatch(getAllTasksError(error));                
             }
         };
+
+        const handleGetAllTaskByDate = async (date) => {
+          try {
+              dispatch(startGetAllTasksLoading());                
+              const res = await getAllTaskByDate(date);                           
+              dispatch(getAllTaskSuccess(res.data));                                            
+          } catch (error) {              
+              dispatch(getAllTasksError(error));                
+          }
+      };
     
         const handleDeleteTaskById = async (taskId) => {
              try {             
@@ -48,7 +58,9 @@ import { updateTask } from "../../Service/task/updateTask";
             try {
               dispatch(startCreateTaskLoading());
               const res = await createTask(data);
-              dispatch(createTaskSuccess(res.data));                                  
+              await handleGetAllTasks();
+              dispatch(createTaskSuccess(res.data));
+
             } catch (error) {
               dispatch(createTaskError(error));
             }
@@ -64,7 +76,7 @@ import { updateTask } from "../../Service/task/updateTask";
             }
           }
 
-          const handleGetTasksDetails=async()=>{
+          const handleGetTaskDetails=async()=>{
             try{
               dispatch(startGetTasksDetailsLoading());
               const res=await getTasksAnalytics();
@@ -86,10 +98,11 @@ import { updateTask } from "../../Service/task/updateTask";
           
         return{
           handleGetAllTasks,
+          handleGetAllTaskByDate,
             handleDeleteTaskById,
             handleCreateTask,
             handleGetTaskById,                       
-            handleGetTasksDetails,
+            handleGetTaskDetails,
             handleUpdateTask,
         };
     }
