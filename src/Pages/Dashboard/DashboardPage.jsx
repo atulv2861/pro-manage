@@ -49,9 +49,9 @@ export default function DashboardPage() {
             <div className={Style.Sidebar}>
                 <div className={Style.SidebarLink}>
                     <div style={{margin:'10px 0px', color:'black'}}><span><img className={Style.Image} src={proManage} alt=""/></span>Pro Manage</div>
-                    <div className={clickedLink==='board'&&Style.ClickedLink} onClick={handleBoard}><span><img className={Style.Image} src={clickedLink==='board'?layoutD:layout} alt=""/></span>Board</div>
-                    <div className={clickedLink==='analytics'&&Style.ClickedLink} onClick={handleAnalytics}><span><img className={Style.Image} src={clickedLink==='analytics'?analyticsD:analytics} alt=""/></span>Analytics</div>
-                    <div className={clickedLink==='setting'&&Style.ClickedLink} onClick={handleSetting}><span><img className={Style.Image} src={clickedLink==='setting'?SettingsD:Settings} alt=""/></span>Setting</div>
+                    <div className={clickedLink==='board'?Style.ClickedLink:''} onClick={handleBoard}><span><img className={Style.Image} src={clickedLink==='board'?layoutD:layout} alt=""/></span>Board</div>
+                    <div className={clickedLink==='analytics'?Style.ClickedLink:''} onClick={handleAnalytics}><span><img className={Style.Image} src={clickedLink==='analytics'?analyticsD:analytics} alt=""/></span>Analytics</div>
+                    <div className={clickedLink==='setting'?Style.ClickedLink:''} onClick={handleSetting}><span><img className={Style.Image} src={clickedLink==='setting'?SettingsD:Settings} alt=""/></span>Setting</div>
                 </div>
                 <div className={Style.Logout}>
                     <div onClick={handleLogout}><span><img style={{marginBottom:'-5px', marginRight:'5px'}} src={logout} alt=""/></span>Log out</div>

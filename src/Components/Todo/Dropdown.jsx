@@ -23,7 +23,7 @@ export default function Dropdown({setAssignee}) {
             {isOpen && (
                 <div className={Style.DropdownItem}>
                     {item.map((value, index) => (
-                        <div className={Style.DropdownField}>
+                        <div className={Style.DropdownField} key={index}>
                             <div style={{padding:'10px',borderRadius:'50%', backgroundColor:'orange'}}>{getTwoCharFromStart(value)}</div>
                             <div>{value}</div>
                             <div><button onClick={e=>handleAssignTo(value)} className={Style.AssignToBtn}>Assign</button></div>

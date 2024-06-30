@@ -41,12 +41,11 @@ export default function CreateTodoComponent({ setCreateTodoPopupOpen }) {
 
     }
 
-    const handleRemoveTaskItem = (item) => {
-        console.log(taskItem)
-        console.log(item)
-        taskItem.splice(item, 1);
-        setTaskItem([...taskItem]);
-        console.log(taskItem)
+    const handleRemoveTaskItem = (indx,e) => {  
+        const newTodos = [...todos];
+        newTodos[0].checkList.splice(indx, 1);        
+        setTodos(newTodos);
+
     }
 
 
@@ -72,8 +71,7 @@ export default function CreateTodoComponent({ setCreateTodoPopupOpen }) {
             ...values[0],
             dueDate: formatDate(date),
         };
-        setTodos(values);
-        console.log(selectedDate);
+        setTodos(values);        
     }
 
     const handleCancelCreateTodo = () => {
@@ -81,10 +79,8 @@ export default function CreateTodoComponent({ setCreateTodoPopupOpen }) {
 
     }
 
-    const handleTodosChange = (e) => {
-        console.log(e.target.name, e.target.value)
-        let values = [...todos];
-        // console.log(values);
+    const handleTodosChange = (e) => {        
+        let values = [...todos];        
         if (e?.target?.name === 'task') {
             values[0] = {
                 ...values[0],
@@ -95,58 +91,66 @@ export default function CreateTodoComponent({ setCreateTodoPopupOpen }) {
                 ...values[0],
                 priority: e.target.innerText,
             };
-        } 
-      
+        }       
         setTodos(values);
-
-        console.log(values);
     }
 
     const handleCheckListChange = (indx, e) => {
-        let values = [...todos];
-        if (e?.target?.name === 'checkList') {
-            if (values[0].checkList[indx]) {
-                values = values.map((item, itemIndex) => {
-                    const updatedOptions = item.checkList.map((option, optionIndex) => {
-                        if (optionIndex === indx) {
-                            return { ...option, isChecked: e.target.checked };
-                        }
-                        return option;
-                    });
-                    return { ...item, checkList: updatedOptions };
-                });
-            } else {
-                values = values?.map((item, itemIndex) => {
-                    const updatedOptions = [...item.checkList];
-                    updatedOptions[indx] = { 'isChecked': e.target.checked };
-                    return { ...item, isChecked: updatedOptions };
+        // let values = [...todos];
+        // if (e?.target?.name === 'checkList') {
+        //     if (values[0].checkList[indx]) {
+        //         values = values.map((item, itemIndex) => {
+        //             const updatedOptions = item.checkList.map((option, optionIndex) => {
+        //                 if (optionIndex === indx) {
+        //                     return { ...option, isChecked: e.target.checked };
+        //                 }
+        //                 return option;
+        //             });
+        //             return { ...item, checkList: updatedOptions };
+        //         });
+        //     } else {
+        //         values = values?.map((item, itemIndex) => {
+        //             const updatedOptions = [...item.checkList];
+        //             updatedOptions[indx] = { 'isChecked': e.target.checked };
+        //             return { ...item, isChecked: updatedOptions };
 
-                });
-            }
+        //         });
+        //     }
 
-        } else if (e?.target?.name === 'checkListValue') {
+        // } else if (e?.target?.name === 'checkListValue') {
 
-            if (values[0].checkList[indx]) {
-                values = values.map((item, itemIndex) => {
-                    const updatedOptions = item.checkList.map((option, optionIndex) => {
-                        if (optionIndex === indx) {
-                            return { ...option, value: e.target.value };
-                        }
-                        return option;
-                    });
-                    return { ...item, value: updatedOptions };
-                });
-            } else {
-                values = values?.map((item, itemIndex) => {
-                    const updatedOptions = [...item.checkList];
-                    updatedOptions[indx] = { 'value': e.target.value };
-                    return { ...item, value: updatedOptions };
+        //     if (values[0].checkList[indx]) {
+        //         values = values.map((item, itemIndex) => {
+        //             const updatedOptions = item.checkList.map((option, optionIndex) => {
+        //                 if (optionIndex === indx) {
+        //                     return { ...option, value: e.target.value };
+        //                 }
+        //                 return option;
+        //             });
+        //             return { ...item, value: updatedOptions };
+        //         });
+        //     } else {
+        //         values = values?.map((item, itemIndex) => {
+        //             const updatedOptions = [...item.checkList];
+        //             updatedOptions[indx] = { 'value': e.target.value };
+        //             return { ...item, value: updatedOptions };
 
-                });
-            }
-        }
+        //         });
+        //     }
+        // }
+
+        const newTodos = [...todos];
+        if (e.target.name === "checkbox") {
+            newTodos[0].checkList[indx].isChecked = e.target.checked;
+        } else {
+            newTodos[0].checkList[indx].value = e.target.value;
+        }        
+        setTodos(newTodos);
     }
 
+    const handleCreateTodo=()=>{
+        console.log(todos);
+    }
         return (<>
 
             <div className={Style.Container}>
@@ -182,12 +186,12 @@ export default function CreateTodoComponent({ setCreateTodoPopupOpen }) {
                 <div className={Style.Task}>
                     {todos[0]?.checkList?.length > 0 &&
                         todos[0]?.checkList?.map((item, indx) => (
-                            <div className={Style.TaskItem} key={item}>
+                            <div className={Style.TaskItem} key={indx}>
                                 <div>                                    
-                                    <input type='checkbox' name='checkList' onChange={e => handleCheckListChange(indx, e)} style={{ marginLeft: '10px' }} />
+                                    <input type='checkbox' name='checkbox' onChange={e => handleCheckListChange(indx, e)} style={{ marginLeft: '10px' }} />
                                     <input type='text' name='checkListValue' onChange={e => handleCheckListChange(indx, e)} value={item?.value} placeholder='Task to be done' className={Style.TaskInput} />
                                 </div>
-                                <div><button className={Style.DeleteBtn}><img onClick={e => handleRemoveTaskItem(item)} src={delete1} alt='' /></button></div>
+                                <div><button className={Style.DeleteBtn}><img onClick={e => handleRemoveTaskItem(indx,e)} src={delete1} alt='' /></button></div>
                             </div>
                         ))}
 
@@ -197,7 +201,7 @@ export default function CreateTodoComponent({ setCreateTodoPopupOpen }) {
                     <div><button name='dueDate' className={Style.Btn} onClick={e => { handleDueDate(e) }}>{selectedDate ? selectedDate : `Select Due Date`}</button></div>
                     <div className={Style.SaveAndCancelBtn}>
                         <div><button onClick={handleCancelCreateTodo} className={Style.Btn} style={{ border: 'none', outline: '2px solid red' }}>Cancel</button></div>
-                        <div><button className={Style.Btn} style={{ border: 'none', backgroundColor: '#17A2B8', outline: '2px solid #17A2B8' }}>Save</button></div>
+                        <div><button onClick={handleCreateTodo} className={Style.Btn} style={{ border: 'none', backgroundColor: '#17A2B8', outline: '2px solid #17A2B8' }}>Save</button></div>
                     </div>
                 </div>
             </div>
