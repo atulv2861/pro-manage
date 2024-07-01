@@ -17,6 +17,8 @@ const initialState = {
     isGetTaskDetailsLoading:false,    
     getTaskDetailsError:null,
 
+ 
+
 };
 
 const taskSlice = createSlice({
@@ -37,7 +39,7 @@ const taskSlice = createSlice({
             state.isGetAllTasksLoading = false;
             state.getAllTasksError = payload;
         },
-
+        
         // Create Task
         startCreateTaskLoading: (state) => {
             state.isCreateTaskLoading = true;
@@ -93,6 +95,7 @@ export const {
     startGetAllTasksLoading,
     getAllTaskSuccess,
     getAllTasksError,
+    
     startGetTasksDetailsLoading,
     getTasksDetailsSuccess,
     getTasksDetailsError,

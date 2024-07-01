@@ -4,6 +4,7 @@ const bodyParser=require("body-parser");
 const app = express();
 const userRouter = require('./router/userRouter')
 const taskRouter = require('./router/taskRouter')
+const emailRouter = require('./router/peopleEmailRouter')
 app.use((err,req,res,next)=>{
     err.statusCode=err.statusCode;    
      err.message=err.message||"Internal Server Error"
@@ -25,7 +26,7 @@ app.use(cors());
 //router setup
 app.use('/user',userRouter);
 app.use('/task',taskRouter);
-
+app.use('/email',emailRouter)
 app.get("/",async(req,res)=>{    
     res.status(200).json({
       message:"Serve is up!"

@@ -37,8 +37,10 @@ const validationSchema = {
         ).unique().optional(),
         dueDate:Joi.date().iso().optional(),
         currentStatus:Joi.string().strict(true).valid("BACKLOG","TODO","INPROGRESS","DONE").min(4).max(255).optional()
-    })
-    
+    }),
+    createPeopleMail:Joi.object().keys({
+        email: Joi.string().min(5).max(255).required().email()
+    }),
 }
 
 

@@ -7,10 +7,15 @@ import {userRegistrationLoading,
     userLoginError,
     userLogoutLoading,
     userLogoutSuccess,
-    userLogoutError} from "../../Store/Slice/UserSlice";    
+    userLogoutError,
+    getAllEmailsError,
+    getAllEmailsSuccess,
+    startGetAllEmailsLoading} from "../../Store/Slice/UserSlice";    
     import {registerUser} from "../../Service/user/registerUser";
     import { loginUser } from "../../Service/user/loginUser";
     import { logoutUser } from "../../Service/user/logoutUser";
+import { getAllEmails } from "../../Service/user/getEmails";
+import { createEmails } from "../../Service/user/createEmails";
 
     const useUser = () => {
         const dispatch = useDispatch();
@@ -46,8 +51,30 @@ import {userRegistrationLoading,
               dispatch(userLogoutError(error));
             }
           };
+
+          const handleGetAllEmails=async()=>{
+            try{
+              dispatch(startGetAllEmailsLoading());
+              const res=await getAllEmails();
+              dispatch(getAllEmailsSuccess(res.data));
+            }catch(error){
+              dispatch(getAllEmailsError(error));
+            }
+          };
+
+          const handleCreateEmails=async(data)=>{
+            try{
+              const res=await createEmails(data);
+              await handleGetAllEmails();
+              return res.data;
+            }catch(error){
+              return error;
+            }
+          };
         return{
             handleRegisterUser,
+            handleGetAllEmails,
+            handleCreateEmails,
             handleLoginUser,
             handleLogoutUser
         };

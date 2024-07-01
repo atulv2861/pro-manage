@@ -8,6 +8,9 @@ const initialState = {
     userRegistrationError: null,
     userLoginError: null,
     userLogoutError: null,
+    allEmails:null,
+    isGetAllEmailsLoading:false,
+    getAllEmailsError:null
 };
 
 const userSlice = createSlice({
@@ -58,6 +61,22 @@ const userSlice = createSlice({
             state.isUserLogoutLoading = false;
             state.userLogoutError = payload;
         },
+
+         // Get All Emails
+         startGetAllEmailsLoading: (state) => {
+            state.isGetAllEmailsLoading = true;
+            state.getAllEmailsError = null;
+        },
+        getAllEmailsSuccess: (state, { payload }) => {
+            state.isGetAllEmailsLoading = false;                     
+            state.allEmails = payload;
+            state.getAllEmailsError=null;
+        },
+        getAllEmailsError: (state, { payload }) => {
+            state.isGetAllEmailsLoading = false;
+            state.getAllEmailsError = payload;
+        },
+
     }
 });
 
@@ -67,6 +86,9 @@ export const {
     userRegistrationLoading,
     userRegistrationSuccess,
     userRegistrationError,
+    startGetAllEmailsLoading,
+    getAllEmailsSuccess,
+    getAllEmailsError,
     userLoginSuccess,
     userLoginLoading,
     userLoginError,

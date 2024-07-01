@@ -137,10 +137,40 @@ const getNewAccessToken=async(req,res)=>{
           });
     }
 }
+
+const updateDetails = async(req,res)=>{
+    try {
+       const id = req.user._id;
+       if(req.body.password){
+           req.body.password = await passwordHash.generate(req.body.password);
+       }
+       const updatedDetails = await User.findOneAndUpdate(
+           {_id:id},
+           { $set:{
+               ...req.body
+            }
+           },
+           {new :true}
+       )
+       res.status(200).json({
+           success:true,
+           message:"User details updated successfully!",
+           updatedDetails
+       })
+    } catch (error) {
+       console.log(error)
+       return res.status(400).json({
+           success:false,
+           message:"Something went wrong!",
+         });
+    }
+   }
+
 module.exports = { 
     registerUser,    
     loginUser, 
     logoutUser,
     getNewAccessToken,
+    updateDetails
  }
 
