@@ -13,13 +13,13 @@ import { AiOutlineCaretUp, AiOutlineCaretDown } from "react-icons/ai";
 export default function CreateTodoComponent({ setCreateTodoPopupOpen, item }) {
     const inputRef = useRef(null);
     const [fieldErrors, setFieldErrors] = useState();
-    const [taskItem, setTaskItem] = useState([]);
+    const [priority, setPriority] = useState('');
     const [isCalenderOpen, setIsCalenderOpen] = useState(false);
     const [selectedDate, setSelectedDate] = useState(0);
     const [date, setDate] = useState(new Date());
     const [assignee, setAssignee] = useState('');
-    const [noOfCheckList,setNoOfChecklist]=useState(0);
-    const[checkedCheckbox,setCheckedCheckbox]=useState(0);
+    const [noOfCheckList, setNoOfChecklist] = useState(0);
+    const [checkedCheckbox, setCheckedCheckbox] = useState(0);
     const { handleCreateTask } = useTask();
     const { handleGetAllEmails } = useUser();
 
@@ -28,17 +28,15 @@ export default function CreateTodoComponent({ setCreateTodoPopupOpen, item }) {
     console.log(allEmails?.peopleMail?.emails)
     const [todos, setTodos] = useState([{
         task: "",
-        priority: "",
-        assignTo: "",
-        checkList: [],
-        dueDate: "",
+        priority: "",        
+        checkList: [],        
         currentStatus: 'TODO',
     }]);
 
     //Dropdown
     const [isOpen, setIsOpen] = useState(false);
     const [assignTo, setAssignTo] = useState('');
-    const item1 = ['atulverma2861@gmail.com', 'atulverma2861@gmail.com', 'atulverma2861@gmail.com', 'atulverma2861@gmail.com', 'atulverma2861@gmail.com'];
+    
 
     const getTwoCharFromStart = (str) => {
         return str.substring(0, 2).toUpperCase();
@@ -77,7 +75,13 @@ export default function CreateTodoComponent({ setCreateTodoPopupOpen, item }) {
                 dueDate: item?.dueDate,
                 currentStatus: item?.currentStatus,
             }])
-
+            setPriority(item?.priority?.split(" ")[0]);
+            setAssignTo(item?.assignTo);
+            setNoOfChecklist(item?.checkList?.length);
+            const noOfCheckList = item?.checkList?.filter(item => item?.isChecked === true);
+            setCheckedCheckbox(noOfCheckList && noOfCheckList?.length);
+            setDate(item?.dueDate);
+            setSelectedDate(item?.dueDate)
         }
         if (item) {
             editTodo();
@@ -97,12 +101,18 @@ export default function CreateTodoComponent({ setCreateTodoPopupOpen, item }) {
 
     const handleRemoveTaskItem = (indx, e) => {
         const newTodos = [...todos];
-        newTodos[0].checkList.splice(indx, 1);
+        console.log(newTodos)
+        //newTodos[0].checkList.splice(indx, 1);
+        //================================
+        const newCheckList = [...newTodos[0].checkList];  
+        newCheckList.splice(indx, 1);
+        newTodos[0].checkList = newCheckList;
+        //=====================================
         console.log(newTodos[0].checkList)
         setTodos(newTodos);
         setNoOfChecklist(newTodos[0]?.checkList?.length);
-        const noOfCheckList=newTodos[0]?.checkList?.filter(item=>item?.isChecked===true);       
-        setCheckedCheckbox(noOfCheckList&&noOfCheckList?.length);
+        const noOfCheckList = newTodos[0]?.checkList?.filter(item => item?.isChecked === true);
+        setCheckedCheckbox(noOfCheckList && noOfCheckList?.length);
     }
 
 
@@ -120,7 +130,8 @@ export default function CreateTodoComponent({ setCreateTodoPopupOpen, item }) {
     }
 
     const handleSelectDate = (date) => {
-        console.log(date)
+        
+        console.log(new Date(new Date(date).getTime()+1000*60*330).toISOString())
         setDate(date)
         setSelectedDate(formatDate(date));
         setIsCalenderOpen(false);
@@ -138,82 +149,76 @@ export default function CreateTodoComponent({ setCreateTodoPopupOpen, item }) {
     }
 
     const handleTodosChange = (e) => {
+        console.log(e)
         let values = [...todos];
         if (e?.target?.name === 'task') {
             values[0] = {
                 ...values[0],
-                task: e.target.value,
+                [e.target.name]: e.target.value,
             };
-        } else if (e?.target?.name === 'priority') {
+        } else{
             values[0] = {
                 ...values[0],
                 priority: e.target.innerText,
             };
+            setPriority(e?.target?.innerText?.split(" ")[0]);
         }
+
+        // else if (e?.target?.name === 'priority') {
+        //     values[0] = {
+        //         ...values[0],
+        //         priority: e.target.innerText,
+        //     };
+        // }
         setTodos(values);
     }
 
     const handleCheckListChange = (indx, e) => {
-        // let values = [...todos];
-        // if (e?.target?.name === 'checkList') {
-        //     if (values[0].checkList[indx]) {
-        //         values = values.map((item, itemIndex) => {
-        //             const updatedOptions = item.checkList.map((option, optionIndex) => {
-        //                 if (optionIndex === indx) {
-        //                     return { ...option, isChecked: e.target.checked };
-        //                 }
-        //                 return option;
-        //             });
-        //             return { ...item, checkList: updatedOptions };
-        //         });
-        //     } else {
-        //         values = values?.map((item, itemIndex) => {
-        //             const updatedOptions = [...item.checkList];
-        //             updatedOptions[indx] = { 'isChecked': e.target.checked };
-        //             return { ...item, isChecked: updatedOptions };
-
-        //         });
-        //     }
-
-        // } else if (e?.target?.name === 'checkListValue') {
-
-        //     if (values[0].checkList[indx]) {
-        //         values = values.map((item, itemIndex) => {
-        //             const updatedOptions = item.checkList.map((option, optionIndex) => {
-        //                 if (optionIndex === indx) {
-        //                     return { ...option, value: e.target.value };
-        //                 }
-        //                 return option;
-        //             });
-        //             return { ...item, value: updatedOptions };
-        //         });
-        //     } else {
-        //         values = values?.map((item, itemIndex) => {
-        //             const updatedOptions = [...item.checkList];
-        //             updatedOptions[indx] = { 'value': e.target.value };
-        //             return { ...item, value: updatedOptions };
-
-        //         });
-        //     }
+        // const newTodos = [...todos];
+        // if (e.target.name === "checkbox") {
+        //     const newCheckList = [...newTodos[0].checkList];  
+        //     newCheckList.splice(indx, 1);
+        //     newTodos[0].checkList = newCheckList;
+        //     newTodos[0].checkList[indx].isChecked = e.target.checked;
+        //     const noOfCheckList = newTodos[0]?.checkList?.filter(item => item?.isChecked === true);
+        //     setCheckedCheckbox(noOfCheckList && noOfCheckList?.length);
+        // } else {
+        //     newTodos[0].checkList[indx].value = e.target.value;
         // }
+        // setTodos(newTodos);
 
         const newTodos = [...todos];
-        if (e.target.name === "checkbox") {
-            newTodos[0].checkList[indx].isChecked = e.target.checked;
-            const noOfCheckList=newTodos[0]?.checkList?.filter(item=>item?.isChecked===true);       
-            setCheckedCheckbox(noOfCheckList&&noOfCheckList?.length); 
-        } else {
-            newTodos[0].checkList[indx].value = e.target.value;
+    const currentTodo = { ...newTodos[0] }; // Clone the first todo item
+    const newCheckList = currentTodo.checkList.map((item, index) => {
+        if (index === indx) {
+            // Clone the checklist item to avoid direct mutation
+            return { ...item, [e.target.name === "checkbox" ? 'isChecked' : 'value']: e.target.name === "checkbox" ? e.target.checked : e.target.value };
         }
-        setTodos(newTodos);
+        return item;
+    });
+
+    // Update the checklist of the cloned todo
+    currentTodo.checkList = newCheckList;
+
+    // Update the newTodos array with the modified todo
+    newTodos[0] = currentTodo;
+
+    // If the event is from a checkbox, update the count of checked checkboxes
+    if (e.target.name === "checkbox") {
+        const noOfCheckList = newCheckList.filter(item => item.isChecked === true).length;
+        setCheckedCheckbox(noOfCheckList);
+    }
+
+    // Update the todos state
+    setTodos(newTodos);
     }
 
     const handleCreateTodo = async () => {
         await handleCreateTask(...todos)
-        toast.success('Task created successfully!');       
+        toast.success('Task created successfully!');
     }
 
-   
+
     return (<>
 
         <div className={Style.Container}>
@@ -231,12 +236,15 @@ export default function CreateTodoComponent({ setCreateTodoPopupOpen, item }) {
                 />
             </div>
             <div className={Style.PriorityContainer}>
-                <div className={Style.PriorityHeading}>Select Priority<span style={{ color: 'red', marginRight: '50px' }}>*</span></div>
-                <div className={Style.PriorityType}>
-                    <div className={Style.PriorityBtn}><div className={Style.Circel} style={{background: '#63C05B'}}></div><button name='priority' onClick={e => handleTodosChange(e)} className={Style.PriorityTypeBtn}>HIGH PRIORITY</button></div>
+                <div className={Style.PriorityHeading}>Select Priority<span style={{ color: 'red', marginRight: '10px' }}>*</span></div>
+                <div className={Style.PriorityType}> 
+                    <div className={`${Style.PriorityBtn} ${priority==='HIGH'?Style.Backcolor:''}`} name='priority' onClick={e => handleTodosChange(e)}><div className={Style.Circel} style={{ background: '#FF2473' }}></div><div className=''>HIGH PRIORITY</div></div>
+                    <div className={`${Style.PriorityBtn} ${priority==='MODERATE'?Style.Backcolor:''}`} name='priority' onClick={e => handleTodosChange(e)}><div className={Style.Circel} style={{ background: '#18B0FF' }}></div><div className=''>MODERATE PRIORITY</div></div>
+                    <div className={`${Style.PriorityBtn} ${priority==='LOW'?Style.Backcolor:''}`} name='priority' onClick={e => handleTodosChange(e)}><div className={Style.Circel} style={{ background: '#63C05B' }}></div><div className=''>LOW PRIORITY</div></div>
+                    {/* <div className={Style.PriorityBtn}><div className={Style.Circel} style={{background: '#63C05B'}}></div><button name='priority' onClick={e => handleTodosChange(e)} className={Style.PriorityTypeBtn}>HIGH PRIORITY</button></div>
                     <div className={Style.PriorityBtn}><div className={Style.Circel} style={{background: '#18B0FF'}}></div><button name='priority' onClick={e => handleTodosChange(e)} className={Style.PriorityTypeBtn}>MODERATE PRIORITY</button></div>
-                    <div className={Style.PriorityBtn}><div className={Style.Circel} style={{background: '#FF2473'}}></div><button name='priority' onClick={e => handleTodosChange(e)} className={Style.PriorityTypeBtn}>LOW PRIORITY</button></div>
-                </div>
+                    <div className={Style.PriorityBtn}><div className={Style.Circel} style={{background: '#FF2473'}}></div><button name='priority' onClick={e => handleTodosChange(e)} className={Style.PriorityTypeBtn}>LOW PRIORITY</button></div> */}
+                 </div>
             </div>
             <div className={Style.AssignContainer}>
                 <div className={Style.AssignTo}>Assign To</div>

@@ -56,9 +56,9 @@ export default function BoardComponent() {
                 </div>
             </div>
             <div className={Style.BoardSection}>
-                <div className={Style.Header}>
+                <div className={Style.Header} >
                     <div>To Do</div>
-                    <div><span onClick={handleCreateTodo} style={{fontSize:"24px", cursor:"pointer"}}>+&nbsp;&nbsp;</span><img src={save} alt="icon" /></div>
+                    <div style={{marginTop:'-6px'}}><span onClick={handleCreateTodo} style={{fontSize:"24px", cursor:"pointer"}}>+&nbsp;&nbsp;</span><img src={save} alt="icon" /></div>
                 </div>
                 <div className={Style.CardContainer}>
                     {todos?.length>0&&

@@ -141,9 +141,15 @@ const getNewAccessToken=async(req,res)=>{
 const updateDetails = async(req,res)=>{
     try {
        const id = req.user._id;
-       if(req.body.password){
-           req.body.password = await passwordHash.generate(req.body.password);
+
+       if(req.body.email || req.body.password){
+        req.body.refreshToken=null;
+        if(req.body.password){
+            req.body.password = await passwordHash.generate(req.body.password);
+        }
        }
+
+
        const updatedDetails = await User.findOneAndUpdate(
            {_id:id},
            { $set:{

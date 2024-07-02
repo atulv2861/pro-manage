@@ -1,16 +1,25 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Style from "../Board/BoardPage.module.css"
 import BoardComponent from "../../Components/Board/BoardComponent";
 import people from "../../assets/images/people.png";
 import AddPeopleComponent from "../../Components/AddPeople/AddPeopleComponent";
 import { AiOutlineCaretUp, AiOutlineCaretDown } from "react-icons/ai";
 import useTask from "../../Components/Hook/useTask";
+import { useSelector } from "react-redux";
+import getStorage from "../../Service/StorageService";
 export default function BoardPage() {
     const [isAddPeoplePopupOpen, setIsAddPeoplePopupOpen] = useState(false);
     const [isOpen, setIsOpen] = useState(false);
-    const[filter,setFilter]=useState('');
+    const [username,setUsername]=useState('');
+    const[filter,setFilter]=useState('This Week');
     const {handleGetAllTaskByDate}=useTask();
-    const item = ['atulverma2861@gmail.com', 'atulverma2861@gmail.com', 'atulverma2861@gmail.com', 'atulverma2861@gmail.com', 'atulverma2861@gmail.com'];
+    // const{userData}=useSelector(state=>state.user);
+    // console.log(userData?.user?.name?.split(" ")[0]);
+    
+    useEffect(()=>{
+        const userName=JSON.parse(getStorage('user')).name?.split(" ")[0];
+        setUsername(userName);
+    },[]);
     const getFormattedDate = (date) => {
         const day = date.getDate();
         const month = date.toLocaleString('default', { month: 'short' });
@@ -48,7 +57,7 @@ export default function BoardPage() {
                 setIsAddPeoplePopupOpen={setIsAddPeoplePopupOpen} />}
             <div className={Style.Header}>
                 <div className={Style.FirstHead}>
-                    <div style={{ fontSize: '28px', fontWeight: '700' }}>{`Welcome! kumar`}</div>
+                    <div style={{ fontSize: '28px', fontWeight: '700' }}>{`Welcome! ${username}`}</div>
                     <div style={{ fontSize: '20px', fontWeight: '400', color: 'grey' }}>{getFormattedDate(new Date())}</div>
                 </div>
                 <div className={Style.FirstHead}>
@@ -58,7 +67,7 @@ export default function BoardPage() {
                     </div>
                     <div>
                         <div>
-                            <button className={Style.DropdownBtn} onClick={e => setIsOpen(prev => !prev)}>{filter?filter:'Today'}
+                            <button className={Style.DropdownBtn} onClick={e => setIsOpen(prev => !prev)}>{filter?filter:'This Week'}
                                 {!isOpen ? (<AiOutlineCaretUp />) : (<AiOutlineCaretDown />)}
                             </button>
                             {isOpen && (

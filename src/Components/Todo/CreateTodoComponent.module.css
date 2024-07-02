@@ -86,8 +86,8 @@
     justify-content: center;
     justify-content: center;
     margin-bottom: 40px;
-    margin-left: 45px;
-    margin-right: 45px;
+    /* margin-left: 45px;
+    margin-right: 45px; */
     /* gap: 50px; */
 }
 
@@ -292,11 +292,23 @@
     width: 10px;
     height: 10px;
     border-radius: 50%;
-    /* background-color: red; */
-    margin: 4px -9px 0px 10px;
+    margin: 4px -9px 0px 0px;
 }
 
 .PriorityBtn{
     display: flex;
     flex-direction: row;
+    align-items: center;
+    gap: 10px;
+
+    /* ----------------- */
+    padding: 5px 10px;
+    border-radius: 8px;
+    border: 1px solid gainsboro;
+    cursor: pointer;
+    background-color: #fff;
+}
+
+.Backcolor{
+    background: #EEECEC;
 }

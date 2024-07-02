@@ -53,7 +53,7 @@ function convertToRequiredFormat(data) {
             <div style={{fontSize:'18px', fontWeight:'450', marginLeft:'10px'}}>
             {`Checklist(${handleCheckedItem()}/${taskById?.task?.checkList?.length})`}
             </div>
-            <div>
+            <div className={Style.ChecklistItem}>
                 {taskById?.task?.checkList?.length>0&&
                 taskById?.task?.checkList?.map((item,indx)=>
                 <div className={Style.TaskItem} key={indx}>

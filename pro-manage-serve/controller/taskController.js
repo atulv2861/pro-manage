@@ -87,7 +87,7 @@ const getAllTask = async(req,res)=>{
           $match: {
               $or:[
                 {createdBy:userId?.toString()},
-                {assignedTo:req.user.email}
+                {assignTo:req.user.email}
               ]
             }
       },
@@ -116,8 +116,8 @@ const getAllTask = async(req,res)=>{
           }
       }
   ];
-   if(req.query && req.query.date){
-     const date = req.query.date
+  //  if(req.query && req.query.date){
+     const date = req?.query?.date
      switch(date){
       case 'today':
         pipeline[0].$match.createdAt = {$gte: moment.tz(new Date(), "Asia/Kolkata").startOf('day').toDate()}
@@ -129,10 +129,11 @@ const getAllTask = async(req,res)=>{
         pipeline[0].$match.createdAt = {$gte:moment.tz(new Date(), "Asia/Kolkata").subtract(30, 'days').startOf('day').toDate()}
         break;
       default:{
+        pipeline[0].$match.createdAt = {$gte:moment.tz(new Date(), "Asia/Kolkata").subtract(7, 'days').startOf('day').toDate()}
 
        }  
       }
-   }
+  //  }
     const tasks = await Task.aggregate(pipeline)
     res.status(201).json({
       success: true,
@@ -176,7 +177,7 @@ const getTaskAnalysis = async(req,res)=>{
         $match: {
           $or:[
             {createdBy:userId?.toString()},
-            {assignedTo:req.user.email}
+            {assignTo:req.user.email}
           ]
         }
       },
