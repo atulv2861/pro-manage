@@ -4,7 +4,6 @@ import { useRef, useEffect } from "react";
 import delete1 from '../../assets/images/delete.png'
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
-import Dropdown from "./Dropdown";
 import useTask from "../Hook/useTask";
 import useUser from "../Hook/useUser";
 import { toast } from "react-toastify";
@@ -20,7 +19,7 @@ export default function CreateTodoComponent({ setCreateTodoPopupOpen, item }) {
     const [assignee, setAssignee] = useState('');
     const [noOfCheckList, setNoOfChecklist] = useState(0);
     const [checkedCheckbox, setCheckedCheckbox] = useState(0);
-    const { handleCreateTask } = useTask();
+    const { handleCreateTask, handleUpdateTask } = useTask();
     const { handleGetAllEmails } = useUser();
 
 
@@ -28,15 +27,15 @@ export default function CreateTodoComponent({ setCreateTodoPopupOpen, item }) {
     console.log(allEmails?.peopleMail?.emails)
     const [todos, setTodos] = useState([{
         task: "",
-        priority: "",        
-        checkList: [],        
+        priority: "",
+        checkList: [],
         currentStatus: 'TODO',
     }]);
 
     //Dropdown
     const [isOpen, setIsOpen] = useState(false);
     const [assignTo, setAssignTo] = useState('');
-    
+
 
     const getTwoCharFromStart = (str) => {
         return str.substring(0, 2).toUpperCase();
@@ -56,13 +55,19 @@ export default function CreateTodoComponent({ setCreateTodoPopupOpen, item }) {
     }, []);
 
     useEffect(() => {
-        let values = [...todos];
-        values[0] = {
-            ...values[0],
-            assignTo: assignee,
-        };
-        setTodos(values);
+        const initial=()=>{
+            let values = [...todos];
+            values[0] = {
+                ...values[0],
+                assignTo: assignee,
+            };
+            setTodos(values);
+        }       
+        if(assignee){
+            initial();
+        }
     }, [assignee]);
+
 
     useEffect(() => {
         const editTodo = async () => {
@@ -76,12 +81,15 @@ export default function CreateTodoComponent({ setCreateTodoPopupOpen, item }) {
                 currentStatus: item?.currentStatus,
             }])
             setPriority(item?.priority?.split(" ")[0]);
-            setAssignTo(item?.assignTo);
+            setAssignTo(item?.assignTo?item?.assignTo:'');
             setNoOfChecklist(item?.checkList?.length);
             const noOfCheckList = item?.checkList?.filter(item => item?.isChecked === true);
             setCheckedCheckbox(noOfCheckList && noOfCheckList?.length);
-            setDate(item?.dueDate);
-            setSelectedDate(item?.dueDate)
+            if(item?.dueDate){
+                setDate(item?.dueDate);
+                setSelectedDate(formatDate(item?.dueDate))
+            }
+
         }
         if (item) {
             editTodo();
@@ -89,26 +97,22 @@ export default function CreateTodoComponent({ setCreateTodoPopupOpen, item }) {
     }, []);
 
     const handleAddNewTaskItem = () => {
-        const newTodos = [...todos];
-        newTodos[0].checkList.push({
+        const newTodos = [...todos];       
+        const newCheckList = [...newTodos[0].checkList];
+        newCheckList.push({
             isChecked: false,
             value: ""
         });
+        newTodos[0].checkList = newCheckList;      
         setNoOfChecklist(newTodos[0]?.checkList?.length);
         setTodos(newTodos);
-
     }
 
     const handleRemoveTaskItem = (indx, e) => {
-        const newTodos = [...todos];
-        console.log(newTodos)
-        //newTodos[0].checkList.splice(indx, 1);
-        //================================
-        const newCheckList = [...newTodos[0].checkList];  
+        const newTodos = [...todos];       
+        const newCheckList = [...newTodos[0].checkList];
         newCheckList.splice(indx, 1);
-        newTodos[0].checkList = newCheckList;
-        //=====================================
-        console.log(newTodos[0].checkList)
+        newTodos[0].checkList = newCheckList;     
         setTodos(newTodos);
         setNoOfChecklist(newTodos[0]?.checkList?.length);
         const noOfCheckList = newTodos[0]?.checkList?.filter(item => item?.isChecked === true);
@@ -130,8 +134,7 @@ export default function CreateTodoComponent({ setCreateTodoPopupOpen, item }) {
     }
 
     const handleSelectDate = (date) => {
-        
-        console.log(new Date(new Date(date).getTime()+1000*60*330).toISOString())
+        console.log(new Date(new Date(date).getTime() + 1000 * 60 * 330).toISOString())
         setDate(date)
         setSelectedDate(formatDate(date));
         setIsCalenderOpen(false);
@@ -148,72 +151,47 @@ export default function CreateTodoComponent({ setCreateTodoPopupOpen, item }) {
 
     }
 
-    const handleTodosChange = (e) => {
-        console.log(e)
+    const handleTodosChange = (e) => {        
         let values = [...todos];
         if (e?.target?.name === 'task') {
             values[0] = {
                 ...values[0],
                 [e.target.name]: e.target.value,
             };
-        } else{
+        } else {
             values[0] = {
                 ...values[0],
                 priority: e.target.innerText,
             };
             setPriority(e?.target?.innerText?.split(" ")[0]);
         }
-
-        // else if (e?.target?.name === 'priority') {
-        //     values[0] = {
-        //         ...values[0],
-        //         priority: e.target.innerText,
-        //     };
-        // }
         setTodos(values);
     }
 
-    const handleCheckListChange = (indx, e) => {
-        // const newTodos = [...todos];
-        // if (e.target.name === "checkbox") {
-        //     const newCheckList = [...newTodos[0].checkList];  
-        //     newCheckList.splice(indx, 1);
-        //     newTodos[0].checkList = newCheckList;
-        //     newTodos[0].checkList[indx].isChecked = e.target.checked;
-        //     const noOfCheckList = newTodos[0]?.checkList?.filter(item => item?.isChecked === true);
-        //     setCheckedCheckbox(noOfCheckList && noOfCheckList?.length);
-        // } else {
-        //     newTodos[0].checkList[indx].value = e.target.value;
-        // }
-        // setTodos(newTodos);
-
+    const handleCheckListChange = (indx, e) => { 
         const newTodos = [...todos];
-    const currentTodo = { ...newTodos[0] }; // Clone the first todo item
-    const newCheckList = currentTodo.checkList.map((item, index) => {
-        if (index === indx) {
-            // Clone the checklist item to avoid direct mutation
-            return { ...item, [e.target.name === "checkbox" ? 'isChecked' : 'value']: e.target.name === "checkbox" ? e.target.checked : e.target.value };
+        const currentTodo = { ...newTodos[0] };
+        const newCheckList = currentTodo.checkList.map((item, index) => {
+            if (index === indx) {                
+                return { ...item, [e.target.name === "checkbox" ? 'isChecked' : 'value']: e.target.name === "checkbox" ? e.target.checked : e.target.value };
+            }
+            return item;
+        });        
+        currentTodo.checkList = newCheckList;
+        newTodos[0] = currentTodo;
+        if (e.target.name === "checkbox") {
+            const noOfCheckList = newCheckList.filter(item => item.isChecked === true).length;
+            setCheckedCheckbox(noOfCheckList);
         }
-        return item;
-    });
-
-    // Update the checklist of the cloned todo
-    currentTodo.checkList = newCheckList;
-
-    // Update the newTodos array with the modified todo
-    newTodos[0] = currentTodo;
-
-    // If the event is from a checkbox, update the count of checked checkboxes
-    if (e.target.name === "checkbox") {
-        const noOfCheckList = newCheckList.filter(item => item.isChecked === true).length;
-        setCheckedCheckbox(noOfCheckList);
-    }
-
-    // Update the todos state
-    setTodos(newTodos);
+        setTodos(newTodos);
     }
 
     const handleCreateTodo = async () => {
+        console.log(...todos)
+        if (item?._id) {           
+            await handleUpdateTask(item?._id, ...todos);
+            return toast.success('Task updated successfully!');
+        }
         await handleCreateTask(...todos)
         toast.success('Task created successfully!');
     }
@@ -237,14 +215,14 @@ export default function CreateTodoComponent({ setCreateTodoPopupOpen, item }) {
             </div>
             <div className={Style.PriorityContainer}>
                 <div className={Style.PriorityHeading}>Select Priority<span style={{ color: 'red', marginRight: '10px' }}>*</span></div>
-                <div className={Style.PriorityType}> 
-                    <div className={`${Style.PriorityBtn} ${priority==='HIGH'?Style.Backcolor:''}`} name='priority' onClick={e => handleTodosChange(e)}><div className={Style.Circel} style={{ background: '#FF2473' }}></div><div className=''>HIGH PRIORITY</div></div>
-                    <div className={`${Style.PriorityBtn} ${priority==='MODERATE'?Style.Backcolor:''}`} name='priority' onClick={e => handleTodosChange(e)}><div className={Style.Circel} style={{ background: '#18B0FF' }}></div><div className=''>MODERATE PRIORITY</div></div>
-                    <div className={`${Style.PriorityBtn} ${priority==='LOW'?Style.Backcolor:''}`} name='priority' onClick={e => handleTodosChange(e)}><div className={Style.Circel} style={{ background: '#63C05B' }}></div><div className=''>LOW PRIORITY</div></div>
+                <div className={Style.PriorityType}>
+                    <div className={`${Style.PriorityBtn} ${priority === 'HIGH' ? Style.Backcolor : ''}`} name='priority' onClick={e => handleTodosChange(e)}><div className={Style.Circel} style={{ background: '#FF2473' }}></div><div className=''>HIGH PRIORITY</div></div>
+                    <div className={`${Style.PriorityBtn} ${priority === 'MODERATE' ? Style.Backcolor : ''}`} name='priority' onClick={e => handleTodosChange(e)}><div className={Style.Circel} style={{ background: '#18B0FF' }}></div><div className=''>MODERATE PRIORITY</div></div>
+                    <div className={`${Style.PriorityBtn} ${priority === 'LOW' ? Style.Backcolor : ''}`} name='priority' onClick={e => handleTodosChange(e)}><div className={Style.Circel} style={{ background: '#63C05B' }}></div><div className=''>LOW PRIORITY</div></div>
                     {/* <div className={Style.PriorityBtn}><div className={Style.Circel} style={{background: '#63C05B'}}></div><button name='priority' onClick={e => handleTodosChange(e)} className={Style.PriorityTypeBtn}>HIGH PRIORITY</button></div>
                     <div className={Style.PriorityBtn}><div className={Style.Circel} style={{background: '#18B0FF'}}></div><button name='priority' onClick={e => handleTodosChange(e)} className={Style.PriorityTypeBtn}>MODERATE PRIORITY</button></div>
                     <div className={Style.PriorityBtn}><div className={Style.Circel} style={{background: '#FF2473'}}></div><button name='priority' onClick={e => handleTodosChange(e)} className={Style.PriorityTypeBtn}>LOW PRIORITY</button></div> */}
-                 </div>
+                </div>
             </div>
             <div className={Style.AssignContainer}>
                 <div className={Style.AssignTo}>Assign To</div>
@@ -287,7 +265,7 @@ export default function CreateTodoComponent({ setCreateTodoPopupOpen, item }) {
                 <div><button name='dueDate' className={Style.Btn} onClick={e => { handleDueDate(e) }}>{selectedDate ? selectedDate : `Select Due Date`}</button></div>
                 <div className={Style.SaveAndCancelBtn}>
                     <div><button onClick={handleCancelCreateTodo} className={Style.Btn} style={{ border: 'none', outline: '2px solid red' }}>Cancel</button></div>
-                    <div><button onClick={handleCreateTodo} className={Style.Btn} style={{ border: 'none', backgroundColor: '#17A2B8', outline: '2px solid #17A2B8' }}>Save</button></div>
+                    <div><button onClick={handleCreateTodo} className={Style.Btn} style={{ border: 'none', backgroundColor: '#17A2B8', outline: '2px solid #17A2B8' }}>{item?._id ? 'Update' : 'Save'}</button></div>
                 </div>
             </div>
         </div>

@@ -1,9 +1,10 @@
-import React,{useState} from "react";
+import React,{useEffect, useState} from "react";
 import Style from "../Settings/SettingComponent.module.css";
 import profile from "../../assets/images/Profile.png";
 import email from "../../assets/images/email.png";
 import lock from "../../assets/images/lock.png";
 import view from "../../assets/images/view.png";
+import getStorage from "../../Service/StorageService";
 export default function SettingComponent() {
     const [showOldPassword, setShowOldPassword] = useState(false);
     const [showNewPassword, setShowNewPassword] = useState(false);
@@ -22,6 +23,14 @@ export default function SettingComponent() {
         });
     }
 
+    useEffect(()=>{
+        const userData=JSON.parse(getStorage('user'));
+        setUserDetails({
+            name:userData?.name,
+            email:userData?.email
+        });       
+    },[]);
+    
     const handleToggleOldPassword = (e) => {
         setShowOldPassword(!showOldPassword);
     }

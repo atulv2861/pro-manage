@@ -61,10 +61,10 @@ function convertToRequiredFormat(data) {
                     <input type='text' value={item?.value} placeholder='Task to be done' readOnly className={Style.TaskInput} />
                 </div>)}               
             </div>
-            <div className={Style.Duedate}>
+            {taskById?.task?.dueDate&&<div className={Style.Duedate}>
                 <div style={{fontSize:'18px', fontWeight:'450', marginLeft:'10px'}}>Due Date</div>
                 <div className={Style.Date}>{convertToRequiredFormat(taskById?.task?.dueDate)}</div>
-            </div>
+            </div>}
         </div>
     )
 }

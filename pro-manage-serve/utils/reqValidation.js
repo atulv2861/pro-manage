@@ -26,7 +26,7 @@ const validationSchema = {
     }),
     updateTask : Joi.object().keys({
         // _id: Joi.string().strict(true).required(),
-        title:Joi.string().strict(true).min(3).max(255).optional(),
+        task:Joi.string().strict(true).min(3).max(255).optional(),
         priority:Joi.string().strict(true).valid("HIGH PRIORITY","MODERATE PRIORITY","LOW PRIORITY").optional(),
         assignTo:Joi.string().strict(true).min(5).max(255).optional().email(),
         checkList: Joi.array().strict(true).items(

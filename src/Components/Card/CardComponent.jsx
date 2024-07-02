@@ -40,7 +40,7 @@ export default function CardComponent({ item }) {
     //   }, []);
 
     const handleLinkShare = () => {
-        navigator.clipboard.writeText(`http://localhost:3000/task/${item?._id}`);
+        navigator.clipboard.writeText(`${process.env.REACT_APP_FRONTEND_URL}/task/${item?._id}`);
         toast.success('Link Copied')
         setIsOpenDropdownList(false);
     }
@@ -105,9 +105,9 @@ export default function CardComponent({ item }) {
                  */}
                         <div style={{ marginLeft: '10px', fontSize: '12px' }}>
                             {item?.priority}
-                            <span data-for="custom" data-background-color="#63C05B" data-tip={item?.assignTo} style={{ fontSize: '10px', padding: '3px', borderRadius: '50%', backgroundColor: 'orange' }}>
+                            {item?.assignTo&&<span data-for="custom" data-background-color="#63C05B" data-tip={item?.assignTo} style={{ fontSize: '10px', padding: '3px', borderRadius: '50%', backgroundColor: 'orange' }}>
                                 {getTwoCharFromStart(item?.assignTo)}
-                            </span>
+                            </span>}
                         </div>
                         <ReactTooltip id="custom" place="top"  effect="solid" />
                     
@@ -144,7 +144,7 @@ export default function CardComponent({ item }) {
                     </div>
                 )}
             </div>
-            <div className={Style.AllBtn}>
+            <div className={Style.AllBtn} style={{justifyContent:item?.dueDate?'':'flex-end'}}>
                 {item?.currentStatus === 'DONE' && <div><button style={{ background: '#63C05B', color: '#fff' }} className={Style.Btn}>{convertToRequiredFormat(item?.dueDate)}</button></div>}
                 {new Date(item?.dueDate) < new Date() && item?.currentStatus !== 'DONE' && <div><button style={{ background: 'red', color: '#fff' }} className={Style.Btn}>{convertToRequiredFormat(item?.dueDate)}</button></div>}
                 {new Date(item?.dueDate) > new Date() && item?.currentStatus !== 'DONE' && <div><button style={{}} className={Style.Btn}>{convertToRequiredFormat(item?.dueDate)}</button></div>}
