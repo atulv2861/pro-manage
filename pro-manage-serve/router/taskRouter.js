@@ -2,7 +2,7 @@ const express = require('express');
 const router= express.Router();
 const reqValidation = require('../utils/reqValidation');
 const scheamValidation = require('../middleware/reqValidationMiddleware')
-const { createTask,updateTask,deleteTask,getAllTask,getTaskById,getTaskAnalysis } =  require('../controller/TaskController');
+const { createTask,updateTask,deleteTask,getAllTask,getTaskById,getTaskAnalysis } =  require('../controller/taskController');
 const  {isAuth}  = require('../middleware/authMiddleware');
 
 // Tasks
