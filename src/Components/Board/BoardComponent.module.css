@@ -1,33 +1,36 @@
-.Container{
+.Container {
     display: flex;
     flex-direction: row;
     justify-content: center;
     gap: 1vw;
 }
 
-
-.Header{
+.Header {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
     margin: 10px 10px;
 }
 
-.BoardSection{
+.BoardSection {
     width: 21vw;
     height: 82vh;
-    background-color: #EEF2F5;   
+    background-color: #EEF2F5;
     border-radius: 12px;
+    display: flex;
+    flex-direction: column;
 }
 
-.CardContainer{
+.CardContainer {
     display: flex;
-    justify-content: center;
+    justify-content: flex-start;
     flex-direction: column;
     align-items: center;
     gap: 10px;
-    max-height: 70vh;
-    overflow-y: scroll;      
+    height: calc(100% - 50px);
+    padding: 10px; 
+    overflow-y: auto;
+    flex-grow: 1;
 }
 
 .CardContainer::-webkit-scrollbar {
@@ -40,11 +43,35 @@
 
 .CardContainer::-webkit-scrollbar-thumb {
     background: #e0dede;
-    border-radius: 8px;    
+    border-radius: 8px;
 }
 
 .CardContainer::-webkit-scrollbar-thumb:hover {
     background: #555;
 }
+
+.CardComponent {
+    width: 100%;
+    margin-bottom: 10px; /* Ensure some space between cards */
+}
+
+/* ====================Container================== */
+
+/* .Container::-webkit-scrollbar {
+    width: 10px;
+}
+
+.Container::-webkit-scrollbar-track {
+    background: #fff;
+}
+
+.Container::-webkit-scrollbar-thumb {
+    background: #e0dede;
+    border-radius: 8px;    
+}
+
+.Container::-webkit-scrollbar-thumb:hover {
+    background: #555;
+} */
 
 

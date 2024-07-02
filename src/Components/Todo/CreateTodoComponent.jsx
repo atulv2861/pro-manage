@@ -24,6 +24,7 @@ export default function CreateTodoComponent({ setCreateTodoPopupOpen, item }) {
 
 
     const { allEmails } = useSelector(state => state?.user);
+    const { createdTask } = useSelector(state => state.task);
     console.log(allEmails?.peopleMail?.emails)
     const [todos, setTodos] = useState([{
         task: "",
@@ -55,15 +56,15 @@ export default function CreateTodoComponent({ setCreateTodoPopupOpen, item }) {
     }, []);
 
     useEffect(() => {
-        const initial=()=>{
+        const initial = () => {
             let values = [...todos];
             values[0] = {
                 ...values[0],
                 assignTo: assignee,
             };
             setTodos(values);
-        }       
-        if(assignee){
+        }
+        if (assignee) {
             initial();
         }
     }, [assignee]);
@@ -81,11 +82,11 @@ export default function CreateTodoComponent({ setCreateTodoPopupOpen, item }) {
                 currentStatus: item?.currentStatus,
             }])
             setPriority(item?.priority?.split(" ")[0]);
-            setAssignTo(item?.assignTo?item?.assignTo:'');
+            setAssignTo(item?.assignTo ? item?.assignTo : '');
             setNoOfChecklist(item?.checkList?.length);
             const noOfCheckList = item?.checkList?.filter(item => item?.isChecked === true);
             setCheckedCheckbox(noOfCheckList && noOfCheckList?.length);
-            if(item?.dueDate){
+            if (item?.dueDate) {
                 setDate(item?.dueDate);
                 setSelectedDate(formatDate(item?.dueDate))
             }
@@ -97,22 +98,22 @@ export default function CreateTodoComponent({ setCreateTodoPopupOpen, item }) {
     }, []);
 
     const handleAddNewTaskItem = () => {
-        const newTodos = [...todos];       
+        const newTodos = [...todos];
         const newCheckList = [...newTodos[0].checkList];
         newCheckList.push({
             isChecked: false,
             value: ""
         });
-        newTodos[0].checkList = newCheckList;      
+        newTodos[0].checkList = newCheckList;
         setNoOfChecklist(newTodos[0]?.checkList?.length);
         setTodos(newTodos);
     }
 
     const handleRemoveTaskItem = (indx, e) => {
-        const newTodos = [...todos];       
+        const newTodos = [...todos];
         const newCheckList = [...newTodos[0].checkList];
         newCheckList.splice(indx, 1);
-        newTodos[0].checkList = newCheckList;     
+        newTodos[0].checkList = newCheckList;
         setTodos(newTodos);
         setNoOfChecklist(newTodos[0]?.checkList?.length);
         const noOfCheckList = newTodos[0]?.checkList?.filter(item => item?.isChecked === true);
@@ -151,7 +152,7 @@ export default function CreateTodoComponent({ setCreateTodoPopupOpen, item }) {
 
     }
 
-    const handleTodosChange = (e) => {        
+    const handleTodosChange = (e) => {
         let values = [...todos];
         if (e?.target?.name === 'task') {
             values[0] = {
@@ -168,15 +169,15 @@ export default function CreateTodoComponent({ setCreateTodoPopupOpen, item }) {
         setTodos(values);
     }
 
-    const handleCheckListChange = (indx, e) => { 
+    const handleCheckListChange = (indx, e) => {
         const newTodos = [...todos];
         const currentTodo = { ...newTodos[0] };
         const newCheckList = currentTodo.checkList.map((item, index) => {
-            if (index === indx) {                
+            if (index === indx) {
                 return { ...item, [e.target.name === "checkbox" ? 'isChecked' : 'value']: e.target.name === "checkbox" ? e.target.checked : e.target.value };
             }
             return item;
-        });        
+        });
         currentTodo.checkList = newCheckList;
         newTodos[0] = currentTodo;
         if (e.target.name === "checkbox") {
@@ -187,16 +188,35 @@ export default function CreateTodoComponent({ setCreateTodoPopupOpen, item }) {
     }
 
     const handleCreateTodo = async () => {
-        console.log(...todos)
-        if (item?._id) {           
-            await handleUpdateTask(item?._id, ...todos);
-            return toast.success('Task updated successfully!');
+        const todoData = { ...todos[0] };
+        console.log(todoData)
+        if (!todoData?.task.trim()) {
+            toast.error("Title is mendatory field!");
+            return;
         }
-        await handleCreateTask(...todos)
-        toast.success('Task created successfully!');
+        if (!todoData?.priority.trim()) {
+            toast.error("Priority is mendatory field!");
+            return;
+        }
+        if (todoData?.checkList.length <= 0) {
+            toast.error("Checklist is mendatory field!");
+            return;
+        }
+
+        if (item?._id) {
+            const res = await handleUpdateTask(item?._id, ...todos);
+            if (res.status === 201)
+                return toast.success('Task updated successfully!');
+            return toast.success('Something went wrong!');
+        }
+        const res=await handleCreateTask(...todos);
+        if (res.status === 201)
+            return toast.success('Task created successfully!');
+        return toast.success('Something went wrong!');
+        
     }
 
-
+    
     return (<>
 
         <div className={Style.Container}>
@@ -206,7 +226,7 @@ export default function CreateTodoComponent({ setCreateTodoPopupOpen, item }) {
                 <input
                     type="text"
                     placeholder="Enter Task Title"
-                    className={`${Style.InputBox} ${fieldErrors?.question && Style.ErrorMsg}`}
+                    className={Style.InputBox}
                     name="task"
                     ref={inputRef}
                     onChange={e => handleTodosChange(e)}
@@ -219,15 +239,11 @@ export default function CreateTodoComponent({ setCreateTodoPopupOpen, item }) {
                     <div className={`${Style.PriorityBtn} ${priority === 'HIGH' ? Style.Backcolor : ''}`} name='priority' onClick={e => handleTodosChange(e)}><div className={Style.Circel} style={{ background: '#FF2473' }}></div><div className=''>HIGH PRIORITY</div></div>
                     <div className={`${Style.PriorityBtn} ${priority === 'MODERATE' ? Style.Backcolor : ''}`} name='priority' onClick={e => handleTodosChange(e)}><div className={Style.Circel} style={{ background: '#18B0FF' }}></div><div className=''>MODERATE PRIORITY</div></div>
                     <div className={`${Style.PriorityBtn} ${priority === 'LOW' ? Style.Backcolor : ''}`} name='priority' onClick={e => handleTodosChange(e)}><div className={Style.Circel} style={{ background: '#63C05B' }}></div><div className=''>LOW PRIORITY</div></div>
-                    {/* <div className={Style.PriorityBtn}><div className={Style.Circel} style={{background: '#63C05B'}}></div><button name='priority' onClick={e => handleTodosChange(e)} className={Style.PriorityTypeBtn}>HIGH PRIORITY</button></div>
-                    <div className={Style.PriorityBtn}><div className={Style.Circel} style={{background: '#18B0FF'}}></div><button name='priority' onClick={e => handleTodosChange(e)} className={Style.PriorityTypeBtn}>MODERATE PRIORITY</button></div>
-                    <div className={Style.PriorityBtn}><div className={Style.Circel} style={{background: '#FF2473'}}></div><button name='priority' onClick={e => handleTodosChange(e)} className={Style.PriorityTypeBtn}>LOW PRIORITY</button></div> */}
                 </div>
             </div>
             <div className={Style.AssignContainer}>
                 <div className={Style.AssignTo}>Assign To</div>
                 <div className="">
-                    {/* <Dropdown setAssignee={setAssignee} item={allEmails?.peopleMail?.emails}/> */}
                     <div className={Style.Wrapper}>
                         <button className={Style.DropdownBtn} onClick={e => setIsOpen(prev => !prev)}>{assignTo ? assignTo : 'Add a assignee'}
                             {!isOpen ? (<AiOutlineCaretUp />) : (<AiOutlineCaretDown />)}
