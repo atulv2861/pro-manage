@@ -5,7 +5,7 @@ import { useSelector } from "react-redux";
 export default function TaskComponent({taskId}) {
 const{handleGetTaskById}=useTask();
 const {taskById}=useSelector(state=>state.task);
-console.log(taskById)
+
 useEffect(()=>{
     const initial=async()=>{
         await handleGetTaskById(taskId);

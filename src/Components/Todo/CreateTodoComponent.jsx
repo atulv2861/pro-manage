@@ -9,7 +9,7 @@ import useUser from "../Hook/useUser";
 import { toast } from "react-toastify";
 import { useSelector } from "react-redux";
 import { AiOutlineCaretUp, AiOutlineCaretDown } from "react-icons/ai";
-export default function CreateTodoComponent({ setCreateTodoPopupOpen, item }) {
+export default function CreateTodoComponent({ setCreateTodoPopupOpen, item,dateWiseFilter}) {
     const inputRef = useRef(null);
     const [fieldErrors, setFieldErrors] = useState();
     const [priority, setPriority] = useState('');
@@ -25,7 +25,7 @@ export default function CreateTodoComponent({ setCreateTodoPopupOpen, item }) {
 
     const { allEmails } = useSelector(state => state?.user);
     const { createdTask } = useSelector(state => state.task);
-    console.log(allEmails?.peopleMail?.emails)
+   
     const [todos, setTodos] = useState([{
         task: "",
         priority: "",
@@ -72,7 +72,7 @@ export default function CreateTodoComponent({ setCreateTodoPopupOpen, item }) {
 
     useEffect(() => {
         const editTodo = async () => {
-            console.log(item)
+            
             setTodos([{
                 task: item?.task,
                 priority: item?.priority,
@@ -135,7 +135,7 @@ export default function CreateTodoComponent({ setCreateTodoPopupOpen, item }) {
     }
 
     const handleSelectDate = (date) => {
-        console.log(new Date(new Date(date).getTime() + 1000 * 60 * 330).toISOString())
+       
         setDate(date)
         setSelectedDate(formatDate(date));
         setIsCalenderOpen(false);
@@ -189,7 +189,7 @@ export default function CreateTodoComponent({ setCreateTodoPopupOpen, item }) {
 
     const handleCreateTodo = async () => {
         const todoData = { ...todos[0] };
-        console.log(todoData)
+       
         if (!todoData?.task.trim()) {
             toast.error("Title is mendatory field!");
             return;
@@ -204,15 +204,19 @@ export default function CreateTodoComponent({ setCreateTodoPopupOpen, item }) {
         }
 
         if (item?._id) {
-            const res = await handleUpdateTask(item?._id, ...todos);
-            if (res.status === 201)
+            const res = await handleUpdateTask(item?._id, ...todos,dateWiseFilter);
+            if (res.status === 201){
+                setCreateTodoPopupOpen(false);
                 return toast.success('Task updated successfully!');
-            return toast.success('Something went wrong!');
+            }                
+            return toast.error('Something went wrong!');
         }
-        const res=await handleCreateTask(...todos);
-        if (res.status === 201)
+        const res=await handleCreateTask(...todos,dateWiseFilter);
+        if (res.status === 201){
+            setCreateTodoPopupOpen(false);
             return toast.success('Task created successfully!');
-        return toast.success('Something went wrong!');
+        }            
+        return toast.error('Something went wrong!');
         
     }
 
@@ -241,7 +245,7 @@ export default function CreateTodoComponent({ setCreateTodoPopupOpen, item }) {
                     <div className={`${Style.PriorityBtn} ${priority === 'LOW' ? Style.Backcolor : ''}`} name='priority' onClick={e => handleTodosChange(e)}><div className={Style.Circel} style={{ background: '#63C05B' }}></div><div className=''>LOW PRIORITY</div></div>
                 </div>
             </div>
-            <div className={Style.AssignContainer}>
+            {allEmails?.peopleMail?.emails?.length>0&&<div className={Style.AssignContainer}>
                 <div className={Style.AssignTo}>Assign To</div>
                 <div className="">
                     <div className={Style.Wrapper}>
@@ -261,7 +265,7 @@ export default function CreateTodoComponent({ setCreateTodoPopupOpen, item }) {
                         )}
                     </div>
                 </div>
-            </div>
+            </div>}
             <div className={Style.Checklist}>{`Checklist(${checkedCheckbox}/${noOfCheckList})`}<span style={{ color: 'red' }}>*</span></div>
             <div className={Style.Task}>
                 {todos[0]?.checkList?.length > 0 &&

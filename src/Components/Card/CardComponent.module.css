@@ -104,6 +104,10 @@
     width: 10px;
     height: 10px;
     border-radius: 50%;
-    /* background-color: red; */
     margin: 4px -9px 0px 10px;
+}
+
+.TooltipStyle{
+    max-width: 21vw;
+    max-height: fit-content;
 }

@@ -10,7 +10,11 @@ const initialState = {
     userLogoutError: null,
     allEmails:null,
     isGetAllEmailsLoading:false,
-    getAllEmailsError:null
+    getAllEmailsError:null,
+
+    userDataUpdate:null,
+    isUserUpdatedDataLoading:false,
+    userUpdatedDataError:null,
 };
 
 const userSlice = createSlice({
@@ -77,6 +81,22 @@ const userSlice = createSlice({
             state.getAllEmailsError = payload;
         },
 
+         // Update user details
+        startUserUpdatedDataLoading: (state) => {
+            state.isUserUpdatedDataLoading = true;
+            state.userUpdatedDataError = null;
+        },
+        getUserUpdateDataSuccess: (state, { payload }) => {
+            state.isUserUpdatedDataLoading = false;                     
+            state.userDataUpdate = payload;
+            console.log(payload)
+            state.userUpdatedDataError=null;
+        },
+        getUserUpdatedDataError: (state, { payload }) => {
+            state.isUserUpdatedDataLoading = false;
+            state.userUpdatedDataError = payload;
+        },
+
     }
 });
 
@@ -94,4 +114,7 @@ export const {
     userLoginError,
     userLogoutLoading,
     userLogoutSuccess,
+    startUserUpdatedDataLoading,
+    getUserUpdateDataSuccess,
+    getUserUpdatedDataError,
     userLogoutError } = userSlice.actions;

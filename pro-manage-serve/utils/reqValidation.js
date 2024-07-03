@@ -7,6 +7,12 @@ const validationSchema = {
         email: Joi.string().min(5).max(255).required().email(),
         password: Joi.string().min(6).max(1024).required(),
     }),
+    updateDetails :Joi.object().keys({
+        name: Joi.string().min(3).max(30).optional(),
+        email: Joi.string().min(5).max(255).optional().email(),
+        oldPassword: Joi.string().min(6).max(1024).optional(),
+        newPassword: Joi.string().min(6).max(1024).optional(),
+    }),
     loginUser : Joi.object().keys({
         email: Joi.string().min(5).max(255).required().email(),
         password: Joi.string().min(6).max(1024).required(),

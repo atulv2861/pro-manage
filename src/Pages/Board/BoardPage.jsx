@@ -12,6 +12,7 @@ export default function BoardPage() {
     const [isOpen, setIsOpen] = useState(false);
     const [username,setUsername]=useState('');
     const[filter,setFilter]=useState('This Week');
+    const [dateWiseFilter,setDateWiseFilter]=useState('week');
     const {handleGetAllTaskByDate}=useTask();
     // const{userData}=useSelector(state=>state.user);
     // console.log(userData?.user?.name?.split(" ")[0]);
@@ -48,6 +49,7 @@ export default function BoardPage() {
         const result=time === 'today' ? 'Today' : time === 'week' ? 'This Week' : 'This Month';
         setFilter(result);
         setIsOpen(false);
+        setDateWiseFilter(time);
         await handleGetAllTaskByDate(time);
     }
 
@@ -82,7 +84,7 @@ export default function BoardPage() {
                 </div>
             </div>
             <div>
-                <BoardComponent />
+                <BoardComponent dateWiseFilter={dateWiseFilter}/>
             </div>
         </div>
     )

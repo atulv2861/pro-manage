@@ -55,13 +55,12 @@ const useTask = () => {
     }
   };
 
-  const handleCreateTask = async (data) => {
+  const handleCreateTask = async (data,dateWiseFilter) => {
     try {
       dispatch(startCreateTaskLoading());
       const res = await createTask(data);
-      await handleGetAllTasks();
-      dispatch(createTaskSuccess(res.data));
-      console.log(res);
+      await handleGetAllTaskByDate(dateWiseFilter);
+      dispatch(createTaskSuccess(res.data));   
       return res;
     } catch (error) {
       dispatch(createTaskError(error));
@@ -88,13 +87,11 @@ const useTask = () => {
     }
   }
 
-  const handleUpdateTask = async (taskId, data) => {
+  const handleUpdateTask = async (taskId, data,dateWiseFilter) => {
     try {
       dispatch(startCreateTaskLoading());
-      const res = await updateTask(taskId, data);
-      await handleGetAllTasks();
-      console.log(res)
-      console.log(res.data)
+      const res = await updateTask(taskId, data);      
+      await handleGetAllTaskByDate(dateWiseFilter);      
       dispatch(createTaskSuccess(res.data));
       return res;
     } catch (error) {

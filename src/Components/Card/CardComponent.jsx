@@ -8,36 +8,32 @@ import CreateTodoComponent from "../Todo/CreateTodoComponent";
 import useTask from "../Hook/useTask";
 import ReactTooltip from 'react-tooltip';
 
-//import 'react-tooltip/dist/react-tooltip.css'
-export default function CardComponent({ item }) {
+export default function CardComponent({ item, isOpenAllChecklist,setIsOpenAllChecklist,dateWiseFilter}) {
     const [isOpen, setIsOpen] = useState(false);
     const [isOpenDropdownList, setIsOpenDropdownList] = useState(false);
     const [isOpenDeletePopup, setIsOpenDeletePopup] = useState(false);
     const [isEditTodoOpen, setIsEditTodoOpen] = useState(false);
-    const { handleUpdateTask } = useTask();
-    const item1 = ['atulverma2861@gmail.com', 'atulverma2861@gmail.com', 'atulverma2861@gmail.com', 'atulverma2861@gmail.com', 'atulverma2861@gmail.com'];
+    const { handleUpdateTask } = useTask();    
     const btn = ['Backlog', 'Todo', 'InProgress', 'Done'];
     const getTwoCharFromStart = (str) => {
         return str?.length > 0 ? str?.substring(0, 2).toUpperCase() : '';
     }
+ 
+    useEffect(()=>{
+        if(!isOpenAllChecklist){
+            setIsOpen(false);
+        }
+    },[isOpenAllChecklist]);
 
     const handleCheckedItem = () => {
         const noOfCheckList = item?.checkList?.filter(item => item?.isChecked === true);
-        return noOfCheckList && noOfCheckList?.length;
-        //setIsOpen(false);
+        return noOfCheckList && noOfCheckList?.length;        
     }
 
     const handleDeleteCard = async () => {
-
         setIsOpenDropdownList(false);
         setIsOpenDeletePopup(true);
-
-    }
-
-    // useEffect(() => {
-    //     console.log('Component rendered');
-    //     ReactTooltip.rebuild(); // Rebuild tooltips in case of dynamic content
-    //   }, []);
+    }    
 
     const handleLinkShare = () => {
         navigator.clipboard.writeText(`${process.env.REACT_APP_FRONTEND_URL}/task/${item?._id}`);
@@ -66,7 +62,6 @@ export default function CardComponent({ item }) {
         const day = date.getUTCDate();
         const month = months[date.getUTCMonth()];
         const formatedDate = `${month} ${day}${getOrdinalSuffix(day)}`;
-
         return formatedDate;
     }
 
@@ -74,7 +69,7 @@ export default function CardComponent({ item }) {
         const data = {
             currentStatus: status
         };
-        await handleUpdateTask(taskId, data);
+        await handleUpdateTask(taskId, data, dateWiseFilter);
     }
 
     const showTitle=()=>{
@@ -83,6 +78,11 @@ export default function CardComponent({ item }) {
             return item?.task?.substring(0,31)+'...';            
         }
         return item?.task;
+    }
+
+    const handleChecklist=()=>{
+        setIsOpenAllChecklist(true)
+        setIsOpen(prev=>!prev)
     }
 
     return (<>
@@ -100,9 +100,7 @@ export default function CardComponent({ item }) {
                     {item?.priority === 'LOW PRIORITY' && <div className={Style.Circel} style={{ background: '#63C05B' }}></div>}
                     {item?.priority === 'MODERATE PRIORITY' && <div className={Style.Circel} style={{ background: '#18B0FF' }}></div>}
                     {item?.priority === 'HIGH PRIORITY' && <div className={Style.Circel} style={{ background: '#FF2473' }}></div>}
-                    {/* <Tooltip data-tooltip-content={`ippppp`} id="custom-tooltip"/>
-                    <div style={{ marginLeft: '10px', fontSize: '12px' }} data-for="custom-tooltip">{item?.priority}<span style={{ fontSize: '10px', padding: '3px', borderRadius: '50%', backgroundColor: 'orange' }}>{getTwoCharFromStart(item?.assignTo)}</span></div>
-                 */}
+                   
                         <div style={{ marginLeft: '10px', fontSize: '12px' }}>
                             {item?.priority}
                             {item?.assignTo&&<span data-for="custom" data-background-color="#63C05B" data-tip={item?.assignTo} style={{ fontSize: '10px', padding: '3px', borderRadius: '50%', backgroundColor: 'orange' }}>
@@ -125,12 +123,12 @@ export default function CardComponent({ item }) {
             <div data-for={item?.task?.length>30?"title":''} data-background-color="#63C05B" data-tip={item?.task} style={{ margin: '0px 10px', fontSize: 'large', fontWeight: 'bold', cursor:'default' }}>
                 {showTitle()}
             </div>
-            <ReactTooltip id="title" place="top"  effect="solid" />
+            <ReactTooltip className={Style.TooltipStyle} id="title" place="top"  effect="solid"/>
             <div>
-                <button className={Style.DropdownBtn} onClick={e => setIsOpen(prev => !prev)}>{`Checklist(${handleCheckedItem()}/${item?.checkList?.length})`}
-                    {!isOpen ?<span style={{cursor:'pointer'}}><AiOutlineCaretUp /></span> : <span style={{cursor:'pointer'}}><AiOutlineCaretDown /></span>}
+                <button className={Style.DropdownBtn} >{`Checklist(${handleCheckedItem()}/${item?.checkList?.length})`}
+                    {!isOpen ?<span onClick={e => handleChecklist()} style={{cursor:'pointer'}}><AiOutlineCaretUp /></span> : <span onClick={e => handleChecklist()} style={{cursor:'pointer'}}><AiOutlineCaretDown /></span>}
                 </button>
-                {isOpen && (
+                {isOpenAllChecklist&&isOpen && (
                     <div className="">
                         {item?.checkList?.map((item, indx) => (
                             <div className={Style.TaskItem} key={indx}>
@@ -145,9 +143,11 @@ export default function CardComponent({ item }) {
                 )}
             </div>
             <div className={Style.AllBtn} style={{justifyContent:item?.dueDate?'':'flex-end'}}>
+                {item?.dueDate&&<>
                 {item?.currentStatus === 'DONE' && <div><button style={{ background: '#63C05B', color: '#fff' }} className={Style.Btn}>{convertToRequiredFormat(item?.dueDate)}</button></div>}
                 {new Date(item?.dueDate) < new Date() && item?.currentStatus !== 'DONE' && <div><button style={{ background: 'red', color: '#fff' }} className={Style.Btn}>{convertToRequiredFormat(item?.dueDate)}</button></div>}
                 {new Date(item?.dueDate) > new Date() && item?.currentStatus !== 'DONE' && <div><button style={{}} className={Style.Btn}>{convertToRequiredFormat(item?.dueDate)}</button></div>}
+                </>}
                 <div className={Style.TaskBtn}>
                     {btn?.map((item1, indx) => item1?.toLocaleLowerCase() !== item?.currentStatus?.toLocaleLowerCase() &&
                         <button key={indx} onClick={e => handleUpdateStatus(item?._id, item1?.toUpperCase())} className={Style.Btn}>{item1}</button>

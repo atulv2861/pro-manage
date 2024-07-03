@@ -28,7 +28,7 @@ export default function AddPeopleComponent({setIsAddPeoplePopupOpen}){
             setFieldErrors(fieldErrors);
             return;
         }
-        //console.log(userDetails?.email)
+        
         const data={email:userDetails?.email}
         await handleCreateEmails(data)
         setIsAddEmailConfirmationPopupOpen(true);        

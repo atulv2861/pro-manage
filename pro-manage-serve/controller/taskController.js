@@ -1,18 +1,41 @@
 const Task = require("../model/taskSchema");
-const Assessment = require("../model/assessmentSchema");
 const mongoose = require('mongoose')
 const moment = require('moment-timezone');
 const createTask = async (req, res) => {
-  try {  
-    console.log("=================Api called========",req.url);
-    console.log(req.body)
+  try {
     const data = req.body
-    const newTask = new Task({...data,createdBy:req.user._id});
+    const newTask = new Task({ ...data, createdBy: req.user._id });
     await newTask.save()
     res.status(201).json({
       success: true,
-      task: newTask,     
+      task: newTask,
       messages: "New task created!"
+    })
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      message: error.message
+    })
+  }
+}
+const updateTask = async (req, res) => {
+  try {
+    const taskId = req?.params?.taskId;
+    const { ...data } = req.body
+    const newTask = await Task.findOneAndUpdate(
+      { _id: new mongoose.Types.ObjectId(taskId.toString()) },
+      { $set: { ...data } },
+      { new: true }
+    );
+    if (!newTask)
+      return res.status(404).json({
+        success: false,
+        messages: "Task id doesn't exist!"
+      })
+    res.status(201).json({
+      success: true,
+      task: newTask,
+      messages: "Task is updated successfully!"
     })
   } catch (error) {    
     res.status(400).json({
@@ -21,55 +44,26 @@ const createTask = async (req, res) => {
     })
   }
 }
-const updateTask = async (req, res) => {
-  try {  
-    console.log("=================Api called========",req.url);
-    console.log(req.body)
-    const taskId=req?.params?.taskId;
-    const {...data} = req.body
-    console.log(taskId,data)
-    const newTask = await Task.findOneAndUpdate(
-      { _id: new mongoose.Types.ObjectId(taskId.toString())}, // Filter
-      { $set: { ...data } }, // Update
-      { new: true } // Options
-    );
-    res.status(201).json({
-      success: true,
-      task: newTask,     
-      messages: "Task updated!"
-    })
-  } catch (error) { 
-    console.log(error)   
-    res.status(400).json({
-      success: false,
-      message: error.message
-    })
-  }
-}
 
 const deleteTask = async (req, res) => {
-  try {  
-    console.log("=================Api called========",req.url);
-    console.log(req.body)
-    const {taskId} = req.params
-    console.log(taskId)
+  try {
+    const { taskId } = req.params;  
     const newTask = await Task.findByIdAndDelete(
       { _id: new mongoose.Types.ObjectId(taskId.toString()) }
     );
-    if(!newTask){
-      res.status(404).json({
-        success: false,  
-        messages: "Task Id not exist!"
+    if (!newTask) {
+      return res.status(404).json({
+        success: false,
+        messages: "Task Id doesn't exist!"
       })
-      return
+
     }
     res.status(201).json({
-      success: true, 
-      newTask:newTask,   
-      messages: "Task Deleted!"
+      success: true,
+      newTask: newTask,
+      messages: "Task is deleted successfully!"
     })
-  } catch (error) { 
-    console.log(error)   
+  } catch (error) {   
     res.status(400).json({
       success: false,
       message: error.message
@@ -77,70 +71,75 @@ const deleteTask = async (req, res) => {
   }
 }
 
-const getAllTask = async(req,res)=>{
+const getAllTask = async (req, res) => {
   try {
-    console.log("=================Api called========",req.url);
-    console.log(req.body,req._id)
     const userId = req.user._id;
-    const pipeline =  [
+    const pipeline = [
       {
-          $match: {
-              $or:[
-                {createdBy:userId?.toString()},
-                {assignTo:req.user.email}
-              ]
-            }
+        $match: {
+          $or: [
+            { createdBy: userId?.toString() },
+            { assignTo: req.user.email }
+          ]
+        }
       },
       {
-          $group: {
-              _id: "$currentStatus",
-              tasks: { $push: "$$ROOT" } // This will keep all documents in the group
-          }
+        $group: {
+          _id: "$currentStatus",
+          tasks: { $push: "$$ROOT" } // This will keep all documents in the group
+        }
       },
       {
-          $project: {
-              _id: 0,
-              currentStatus: "$_id",
-              tasks: 1
-          }
+        $project: {
+          _id: 0,
+          currentStatus: "$_id",
+          tasks: 1
+        }
       },
       {
-          $group: {
-              _id: null,
-              data: { $push: { k: "$currentStatus", v: "$tasks" } }
-          }
+        $group: {
+          _id: null,
+          data: { $push: { k: "$currentStatus", v: "$tasks" } }
+        }
       },
       {
-          $replaceRoot: {
-              newRoot: { $arrayToObject: "$data" }
-          }
+        $replaceRoot: {
+          newRoot: { $arrayToObject: "$data" }
+        }
       }
-  ];
-  //  if(req.query && req.query.date){
-     const date = req?.query?.date
-     switch(date){
+    ];
+  
+    const date = req?.query?.date
+    switch (date) {
       case 'today':
-        pipeline[0].$match.createdAt = {$gte: moment.tz(new Date(), "Asia/Kolkata").startOf('day').toDate()}
+        pipeline[0].$match.createdAt = { $gte: moment.tz(new Date(), "Asia/Kolkata").startOf('day').toDate() }
         break;
       case 'week':
-        pipeline[0].$match.createdAt = {$gte:moment.tz(new Date(), "Asia/Kolkata").subtract(7, 'days').startOf('day').toDate()}
+        pipeline[0].$match.createdAt = { $gte: moment.tz(new Date(), "Asia/Kolkata").subtract(7, 'days').startOf('day').toDate() }
         break;
       case 'month':
-        pipeline[0].$match.createdAt = {$gte:moment.tz(new Date(), "Asia/Kolkata").subtract(30, 'days').startOf('day').toDate()}
+        pipeline[0].$match.createdAt = { $gte: moment.tz(new Date(), "Asia/Kolkata").subtract(30, 'days').startOf('day').toDate() }
         break;
-      default:{
-        pipeline[0].$match.createdAt = {$gte:moment.tz(new Date(), "Asia/Kolkata").subtract(7, 'days').startOf('day').toDate()}
+      default: {
+        pipeline[0].$match.createdAt = { $gte: moment.tz(new Date(), "Asia/Kolkata").subtract(7, 'days').startOf('day').toDate() }
 
-       }  
       }
-  //  }
+    }
+    
     const tasks = await Task.aggregate(pipeline)
+    if (!tasks) {
+      return res.status(404).json({
+        success: false,
+        messages: "Something went wrong!"
+      })
+
+    }
     res.status(201).json({
       success: true,
-      tasks:tasks,
-      })
-  } catch (error) { 
-    console.log(error)   
+      tasks: tasks,
+      message:'Get All task!'
+    })
+  } catch (error) {    
     res.status(400).json({
       success: false,
       message: error.message
@@ -148,17 +147,23 @@ const getAllTask = async(req,res)=>{
   }
 }
 //
-const getTaskById = async(req,res)=>{
+const getTaskById = async (req, res) => {
   try {
-    console.log("=================Api called========",req.url);
-    console.log(req.body)
     const task = await Task.findById(req.params.taskId);
+    if (!task) {
+      return res.status(404).json({
+        success: false,
+        messages: "Something went wrong!"
+      })
+
+    }
     res.status(201).json({
       success: true,
-      task:task,
-      })
-  } catch (error) { 
-    console.log(error)   
+      task: task,
+      message:'Get task by id!'
+    })
+  } catch (error) {
+    
     res.status(400).json({
       success: false,
       message: error.message
@@ -167,17 +172,15 @@ const getTaskById = async(req,res)=>{
 }
 
 // anlysis
-const getTaskAnalysis = async(req,res)=>{
+const getTaskAnalysis = async (req, res) => {
   try {
-    console.log("=================Api called========",req.url);
-    console.log(req.body,req._id)
     const userId = req.user._id;
-    const pipeline =  [
+    const pipeline = [
       {
         $match: {
-          $or:[
-            {createdBy:userId?.toString()},
-            {assignTo:req.user.email}
+          $or: [
+            { createdBy: userId?.toString() },
+            { assignTo: req.user.email }
           ]
         }
       },
@@ -242,9 +245,9 @@ const getTaskAnalysis = async(req,res)=>{
             {
               $project: {
                 _id: 0,
-                "HIGH PRIORITY": { $ifNull: ["$HIGH PRIORITY", 0] },
-                "LOW PRIORITY": { $ifNull: ["$LOW PRIORITY", 0] },
-                "MODERATE PRIORITY": { $ifNull: ["$MODERATE PRIORITY", 0] }
+                "HIGH_PRIORITY": { $ifNull: ["$HIGH_PRIORITY", 0] },
+                "LOW_PRIORITY": { $ifNull: ["$LOW_PRIORITY", 0] },
+                "MODERATE_PRIORITY": { $ifNull: ["$MODERATE_PRIORITY", 0] }
               }
             }
           ],
@@ -282,21 +285,26 @@ const getTaskAnalysis = async(req,res)=>{
             DONE: { $ifNull: ["$byCurrentStatus.DONE", 0] }
           },
           byPriority: {
-            "HIGH_PRIORITY": { $ifNull: ["$byPriority.HIGH PRIORITY", 0] },
-            "LOW_PRIORITY": { $ifNull: ["$byPriority.LOW PRIORITY", 0] },
-            "MODERATE_PRIORITY": { $ifNull: ["$byPriority.MODERATE PRIORITY", 0] }
+            "HIGH_PRIORITY": { $ifNull: ["$byPriority.HIGH_PRIORITY", 0] },
+            "LOW_PRIORITY": { $ifNull: ["$byPriority.LOW_PRIORITY", 0] },
+            "MODERATE_PRIORITY": { $ifNull: ["$byPriority.MODERATE_PRIORITY", 0] }
           },
           dueCount: 1
         }
       }
     ]
     const tasks = await Task.aggregate(pipeline)
+    if (!tasks) {
+      return res.status(404).json({
+        success: false,
+        messages: "Something went wrong!"
+      })
+    }
     res.status(201).json({
       success: true,
-      tasks:tasks,
-      })
-  } catch (error) { 
-    console.log(error)   
+      tasks: tasks,
+    })
+  } catch (error) {   
     res.status(400).json({
       success: false,
       message: error.message
