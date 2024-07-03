@@ -17,6 +17,7 @@ import logout from "../../assets/images/logout.png"
 export default function DashboardPage() {
     const [isLogoutConfirmationPopupOpen,setIsLogoutConfirmationPopupOpen]=useState(false);
     const [clickedLink, setClickedLink]=useState('board');
+    const [pointerEvent, setPointerEvent]=useState(false);
     const navigate = useNavigate();
 
     useEffect(()=>{
@@ -41,15 +42,17 @@ export default function DashboardPage() {
 
     const handleLogout=async()=>{        
         setIsLogoutConfirmationPopupOpen(true);
-        
+        setPointerEvent(true)
     }
 
   
 
     return (
-        <div className={Style.Dashboard}>
-            {isLogoutConfirmationPopupOpen&&<LogoutPopup
-            setIsLogoutConfirmationPopupOpen={setIsLogoutConfirmationPopupOpen}/>}
+        <>
+        {isLogoutConfirmationPopupOpen&&<LogoutPopup
+            setIsLogoutConfirmationPopupOpen={setIsLogoutConfirmationPopupOpen}
+            setPointerEvent={setPointerEvent}/>}
+        <div className={`${Style.Dashboard} ${pointerEvent&&Style.PointerEvent}`}>            
             <div className={Style.Sidebar}>
                 <div className={Style.SidebarLink}>
                     <div style={{margin:'10px 0px', color:'black'}}><span><img className={Style.Image} src={proManage} alt=""/></span>Pro Manage</div>
@@ -62,11 +65,11 @@ export default function DashboardPage() {
                 </div>
             </div>
             <Routes>
-                <Route path="board" element={<BoardPage />} />
+                <Route path="board" element={<BoardPage setPointerEvent={setPointerEvent}/>} />
                 <Route path='analytics' element={<AnalyticsPage />} />
                 <Route path="setting" element={<SettingPage />} />
             </Routes>
         </div>
-
+        </>
     )
 }

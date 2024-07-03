@@ -11,6 +11,7 @@ export default function BoardComponent({dateWiseFilter}) {
     const [todos,setTodos]=useState([]);
     const [inProgress,setInProgress]=useState([]);
     const [done,setDone]=useState([]);
+    const [isActivePointerEvent,setIsActivePointerEvent]=useState(false);
     //const [filterDate, setFilterDate]=useState(dateWiseFilter);
     const [isOpenAllChecklist, setIsOpenAllChecklist] = useState(true);
     const {handleGetAllTasks,handleGetAllTaskByDate}=useTask();
@@ -39,6 +40,7 @@ export default function BoardComponent({dateWiseFilter}) {
 
     const handleCreateTodo=()=>{
         setCreateTodoPopupOpen(true);
+        setIsActivePointerEvent(true)
     }
 
     const handleCloseChecklist=()=>{
@@ -48,8 +50,9 @@ export default function BoardComponent({dateWiseFilter}) {
     return (<>
     {createTodoPopupOpen&&<CreateTodoComponent setCreateTodoPopupOpen={setCreateTodoPopupOpen}
     dateWiseFilter={dateWiseFilter}
+    setIsActivePointerEvent={setIsActivePointerEvent}
     />}
-        <div className={Style.Container}>
+        <div className={`${Style.Container} ${isActivePointerEvent&&Style.PointerEvent}`} >
             <div className={Style.BoardSection}>
                 <div className={Style.Header}>
                     <div>Backlog</div>

@@ -21,6 +21,11 @@
     flex-direction: column;
 }
 
+.PointerEvent{
+    opacity: 0.3;
+    pointer-events: none;
+}
+
 .CardContainer {
     display: flex;
     justify-content: flex-start;

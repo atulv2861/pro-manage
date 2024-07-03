@@ -9,7 +9,7 @@ import useUser from "../Hook/useUser";
 import { toast } from "react-toastify";
 import { useSelector } from "react-redux";
 import { AiOutlineCaretUp, AiOutlineCaretDown } from "react-icons/ai";
-export default function CreateTodoComponent({ setCreateTodoPopupOpen, item,dateWiseFilter}) {
+export default function CreateTodoComponent({ setCreateTodoPopupOpen, item,dateWiseFilter,setIsActivePointerEvent}) {
     const inputRef = useRef(null);
     const [fieldErrors, setFieldErrors] = useState();
     const [priority, setPriority] = useState('');
@@ -149,7 +149,7 @@ export default function CreateTodoComponent({ setCreateTodoPopupOpen, item,dateW
 
     const handleCancelCreateTodo = () => {
         setCreateTodoPopupOpen(false);
-
+        setIsActivePointerEvent(false);
     }
 
     const handleTodosChange = (e) => {
@@ -220,6 +220,7 @@ export default function CreateTodoComponent({ setCreateTodoPopupOpen, item,dateW
             const res = await handleUpdateTask(item?._id, ...todos,dateWiseFilter);
             if (res.status === 201){
                 setCreateTodoPopupOpen(false);
+                setIsActivePointerEvent(false);
                 return toast.success('Task updated successfully!');
             }                
             return toast.error('Something went wrong!');
@@ -227,6 +228,7 @@ export default function CreateTodoComponent({ setCreateTodoPopupOpen, item,dateW
         const res=await handleCreateTask(...todos,dateWiseFilter);
         if (res.status === 201){
             setCreateTodoPopupOpen(false);
+            setIsActivePointerEvent(false);
             return toast.success('Task created successfully!');
         }            
         return toast.error('Something went wrong!');

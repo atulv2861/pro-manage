@@ -7,7 +7,7 @@ import { AiOutlineCaretUp, AiOutlineCaretDown } from "react-icons/ai";
 import useTask from "../../Components/Hook/useTask";
 import { useSelector } from "react-redux";
 import getStorage from "../../Service/StorageService";
-export default function BoardPage() {
+export default function BoardPage({setPointerEvent}) {
     const [isAddPeoplePopupOpen, setIsAddPeoplePopupOpen] = useState(false);
     const [isOpen, setIsOpen] = useState(false);
     const [username,setUsername]=useState('');
@@ -56,7 +56,8 @@ export default function BoardPage() {
     return (
         <div className={Style.Container}>
             {isAddPeoplePopupOpen && <AddPeopleComponent
-                setIsAddPeoplePopupOpen={setIsAddPeoplePopupOpen} />}
+                setIsAddPeoplePopupOpen={setIsAddPeoplePopupOpen} 
+                setPointerEvent={setPointerEvent}/>}
             <div className={Style.Header}>
                 <div className={Style.FirstHead}>
                     <div style={{ fontSize: '28px', fontWeight: '700' }}>{`Welcome! ${username}`}</div>
@@ -84,7 +85,7 @@ export default function BoardPage() {
                 </div>
             </div>
             <div>
-                <BoardComponent dateWiseFilter={dateWiseFilter}/>
+                <BoardComponent dateWiseFilter={dateWiseFilter} setPointerEvent={setPointerEvent}/>
             </div>
         </div>
     )

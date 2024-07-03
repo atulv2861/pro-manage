@@ -1,6 +1,12 @@
 .Dashboard{
     display: flex;
     flex-direction: row;
+   
+}
+
+.PointerEvent{
+    opacity: 0.3;
+    pointer-events: none;
 }
 
 .Sidebar{

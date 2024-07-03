@@ -6,16 +6,18 @@ import useUser from "../Hook/useUser";
 import { removeStorage } from "../../Service/StorageService";
 import { toast } from "react-toastify";
 
-export default function LogoutPopup({setIsLogoutConfirmationPopupOpen}){
+export default function LogoutPopup({setIsLogoutConfirmationPopupOpen,setPointerEvent}){
     const navigate=useNavigate();
     const {handleLogoutUser}=useUser();
     const { userData } = useSelector((state) => state.user);
     const handleCancelLogoutPopup=()=>{
         setIsLogoutConfirmationPopupOpen(false);
+        setPointerEvent(false);
     }
 
     const handleLogoutPopup=async ()=>{        
         setIsLogoutConfirmationPopupOpen(false);
+        setPointerEvent(false)
         await handleLogoutUser();
         removeStorage("accessToken");
         removeStorage("user");        

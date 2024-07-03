@@ -9,6 +9,7 @@ export default function DeleteConfirmationPopup({ setIsOpenDeletePopup,taskId })
 
     const handleDeleteTodo = async () => {
         await handleDeleteTaskById(taskId);
+        setIsOpenDeletePopup(false);
     }
 
     return (
