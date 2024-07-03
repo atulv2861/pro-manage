@@ -191,16 +191,29 @@ export default function CreateTodoComponent({ setCreateTodoPopupOpen, item,dateW
         const todoData = { ...todos[0] };
        
         if (!todoData?.task.trim()) {
-            toast.error("Title is mendatory field!");
+            toast.error("Title is required!");
+            return;
+        }
+        if (todoData?.task.trim()?.length<3) {
+            toast.error("Title should be minimum 3 character!");
             return;
         }
         if (!todoData?.priority.trim()) {
-            toast.error("Priority is mendatory field!");
+            toast.error("Priority is required!");
             return;
         }
         if (todoData?.checkList.length <= 0) {
-            toast.error("Checklist is mendatory field!");
+            toast.error("Checklist is required!");
             return;
+        }
+
+        if (todoData?.checkList.length) {
+            const res=todoData?.checkList?.filter((item,indx)=>item?.value===(null||undefined||''));
+            if(res.length>0){
+                toast.error("Checklist value should not be empty!");
+                return;
+            }
+                
         }
 
         if (item?._id) {

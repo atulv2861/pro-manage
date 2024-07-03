@@ -239,7 +239,8 @@
 .DropdownItem{
     position: absolute; 
     width: 480px;   
-    top: 85px;
+    /* top: 85px; */
+    top: 280%;
     left: 50%;
     transform: translate(-50%, -50%);
     background: #fff;

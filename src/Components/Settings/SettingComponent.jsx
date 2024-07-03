@@ -45,7 +45,7 @@ export default function SettingComponent() {
     const validateUserDetails=()=>{       
         if(!userDetails?.name?.trim() && !userDetails?.email?.trim() && 
             !userDetails?.oldPassword?.trim() && !userDetails?.newPassword?.trim()){
-                return toast.error("Please put the updated value in the field!");
+                return toast.error("Please put the updated value in the input field!");
         }
     }
     const handleUpdateUserDetails = async () => {
