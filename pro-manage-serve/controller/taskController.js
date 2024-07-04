@@ -245,9 +245,9 @@ const getTaskAnalysis = async (req, res) => {
             {
               $project: {
                 _id: 0,
-                "HIGH_PRIORITY": { $ifNull: ["$HIGH_PRIORITY", 0] },
-                "LOW_PRIORITY": { $ifNull: ["$LOW_PRIORITY", 0] },
-                "MODERATE_PRIORITY": { $ifNull: ["$MODERATE_PRIORITY", 0] }
+                "HIGH PRIORITY": { $ifNull: ["$HIGH PRIORITY", 0] },
+                "LOW PRIORITY": { $ifNull: ["$LOW PRIORITY", 0] },
+                "MODERATE PRIORITY": { $ifNull: ["$MODERATE PRIORITY", 0] }
               }
             }
           ],
@@ -285,9 +285,9 @@ const getTaskAnalysis = async (req, res) => {
             DONE: { $ifNull: ["$byCurrentStatus.DONE", 0] }
           },
           byPriority: {
-            "HIGH_PRIORITY": { $ifNull: ["$byPriority.HIGH_PRIORITY", 0] },
-            "LOW_PRIORITY": { $ifNull: ["$byPriority.LOW_PRIORITY", 0] },
-            "MODERATE_PRIORITY": { $ifNull: ["$byPriority.MODERATE_PRIORITY", 0] }
+            "HIGH_PRIORITY": { $ifNull: ["$byPriority.HIGH PRIORITY", 0] },
+            "LOW_PRIORITY": { $ifNull: ["$byPriority.LOW PRIORITY", 0] },
+            "MODERATE_PRIORITY": { $ifNull: ["$byPriority.MODERATE PRIORITY", 0] }
           },
           dueCount: 1
         }
