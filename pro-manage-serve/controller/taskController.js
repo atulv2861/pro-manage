@@ -258,7 +258,7 @@ const getTaskAnalysis = async (req, res) => {
                 count: {
                   $sum: {
                     $cond: {
-                      if: { $ne: ["$dueDate", null] },
+                      if: { $gt: [{ $type: "$dueDate" }, "missing"] },
                       then: 1,
                       else: 0
                     }
